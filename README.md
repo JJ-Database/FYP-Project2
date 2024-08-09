@@ -44,6 +44,12 @@ Solution Purposed:
 2. AES-256
 3. IoT (Stlimulation for authorized/unauthorized person)
 
+
+Contribution:-
+Our Smart Resident Management System addresses a critical flaw in competitors like Veemios, which is vulnerable to security breaches through cloned smart cards. To enhance safety, we replace traditional smart cards with an OCR-based license plate recognition system that accurately identifies authorized vehicles. This advanced technology, although new in Malaysia, reduces risks and increases the appeal of residential properties, potentially upgrading them to luxury status.
+
+We also secure resident data with AES-256 encryption, protecting against cyber threats like ransomware. Overall, our system simplifies security management while providing enhanced safety and convenience for residents.
+
 Advantage:-
 1. Ensure there are authorized vehicle for entry the parking for solve the parking lots problem. (No Multiple Parking)
 2. Make sure the data credential for user is storing into the secure environment. (No Data Leakage)
