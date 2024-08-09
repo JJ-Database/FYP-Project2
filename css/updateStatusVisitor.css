@@ -1,0 +1,103 @@
+.details-btn, .modify-btn, .delete-btn {
+    padding: 8px 12px;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 0 5px;
+}
+
+.details-btn {
+    background-color: #2196F3;
+}
+
+.modify-btn {
+    background-color: #4CAF50;
+}
+
+.delete-btn {
+    background-color: #f44336;
+}
+
+.popup {
+display: none;
+position: fixed;
+left: 50%;
+top: 50%;
+transform: translate(-50%, -50%);
+width: 80%;
+max-width: 1000px;
+max-height: 80vh; /* Set a maximum height */
+overflow-y: auto; /* Enable vertical scrolling if content exceeds max-height */
+padding: 20px;
+background-color: white;
+box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+z-index: 1000;
+}
+
+.popup .popup-content {
+display: flex;
+flex-direction: column;
+gap: 15px;
+}
+
+.popup .popup-content input,
+.popup .popup-content select {
+padding: 10px;
+border: 1px solid #ccc;
+border-radius: 4px;
+width: 100%;
+}
+
+.popup .popup-content button {
+padding: 10px;
+background-color: #4CAF50;
+color: white;
+border: none;
+border-radius: 4px;
+cursor: pointer;
+}
+
+.popup .popup-content button:hover {
+background-color: #45a049;
+}
+
+.popup .close-btn {
+align-self: flex-end;
+font-size: 20px;
+cursor: pointer;
+color: #333;
+}
+
+.username {
+    position: relative;
+}
+
+.username button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: white;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+.dropdown a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown a:hover {
+    background-color: #ddd;
+}

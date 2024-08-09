@@ -1,0 +1,416 @@
+/* body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    height: 100vh;
+}
+
+.left-nav {
+    width: 200px;
+    background-color: #f8f9fa;
+    height: 100vh;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+    padding-top: 1em;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    margin-top: 0;
+}
+
+.left-nav a {
+    display: block;
+    padding: 1em;
+    text-decoration: none;
+    color: black;
+}
+.left-nav a:hover {
+    background-color: #e2e6ea;
+}
+
+.top-nav {
+    background-color: #333;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1em;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 50px;
+    position: fixed;
+    top: 0;
+    left: 200px;
+    right: 0;
+    z-index: 1;
+}
+
+.top-nav .website-name {
+    font-size: 1.5em;
+    font-weight: bold;
+}
+.top-nav .username {
+    margin-right: 30px;
+    position: relative;
+}
+.top-nav .username button {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    padding: 0;
+    transition: color 0.3s ease;
+}
+.top-nav .username button:focus {
+    outline: none;
+}
+.top-nav .username .dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: black;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 1em;
+    z-index: 1000;
+    width: 150px;
+}
+.top-nav .username .dropdown a {
+    display: block;
+    padding: 0.5em 1em;
+    text-decoration: none;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+.top-nav .username .dropdown a:hover {
+    background-color: #555;
+} */
+
+.main-content {
+    margin-left: 200px;
+    margin-top: 50px;
+    padding: 2em;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.txtWelcome {
+    text-decoration: underline;
+}
+
+.visitor-btn-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.visitor-btn {
+    width: 48%;
+    height: 50px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+.visitor-btn:hover {
+    background-color: #45a049;
+}
+
+.form-container {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    display: none; /* Initially hidden */
+}
+
+.form-container input, .form-container select {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 8px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.form-container button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    float: left;
+    margin-right: 10px;
+}
+
+.form-container button:hover {
+    background-color: #45a049;
+}
+
+.form-container .cancelbtn {
+    background-color: #f44336;
+}
+
+.form-container .cancelbtn:hover {
+    background-color: #da190b;
+}
+
+.success-message {
+    display: none;
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #dff0d8;
+    color: #3c763d;
+    border: 1px solid #d6e9c6;
+    border-radius: 5px;
+}
+
+.visitor-list-container {
+    display: block; 
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.visitor-list-container table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 30px;
+}
+
+.visitor-list-container table, th, td {
+    border: 1px solid black;
+}
+
+.visitor-list-container th, td {
+    padding: 10px;
+    text-align: left;
+}
+/* modify and delete button */
+.modify-btn, .delete-btn {
+    padding: 8px 12px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 0 5px;
+    
+
+}
+.modify-btn:hover, .delete-btn:hover {
+    opacity: 0.8; /* Slightly fade on hover */
+}
+.delete-btn {
+    background-color: #f44336;
+}
+
+
+/* Backup CSS */
+
+/* <style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    height: 100vh;
+}
+
+.left-nav {
+    width: 200px;
+    background-color: #f8f9fa;
+    height: 100vh;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+    padding-top: 1em;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    margin-top: 0;
+}
+
+.left-nav a {
+    display: block;
+    padding: 1em;
+    text-decoration: none;
+    color: black;
+}
+.left-nav a:hover {
+    background-color: #e2e6ea;
+}
+
+.top-nav {
+    background-color: #333;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1em;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 50px;
+    position: fixed;
+    top: 0;
+    left: 200px;
+    right: 0;
+    z-index: 1;
+}
+
+.top-nav .website-name {
+    font-size: 1.5em;
+    font-weight: bold;
+}
+.top-nav .username {
+    margin-right: 30px;
+    position: relative;
+}
+.top-nav .username button {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    padding: 0;
+    transition: color 0.3s ease;
+}
+.top-nav .username button:focus {
+    outline: none;
+}
+.top-nav .username .dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: black;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 1em;
+    z-index: 1000;
+    width: 150px;
+}
+.top-nav .username .dropdown a {
+    display: block;
+    padding: 0.5em 1em;
+    text-decoration: none;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+.top-nav .username .dropdown a:hover {
+    background-color: #555;
+}
+
+.main-content {
+    margin-left: 200px;
+    margin-top: 50px;
+    padding: 2em;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.txtWelcome {
+    text-decoration: underline;
+}
+
+.visitor-btn-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.visitor-btn {
+    width: 48%;
+    height: 50px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+.visitor-btn:hover {
+    background-color: #45a049;
+}
+
+.form-container {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    display: none; 
+}
+
+.form-container input, .form-container select {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 8px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.form-container button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    float: left;
+    margin-right: 10px;
+}
+
+.form-container button:hover {
+    background-color: #45a049;
+}
+
+.form-container .cancelbtn {
+    background-color: #f44336;
+}
+
+.form-container .cancelbtn:hover {
+    background-color: #da190b;
+}
+
+.success-message {
+    display: none;
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #dff0d8;
+    color: #3c763d;
+    border: 1px solid #d6e9c6;
+    border-radius: 5px;
+}
+
+.visitor-list-container {
+    display: block; 
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.visitor-list-container table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 30px;
+}
+
+.visitor-list-container table, th, td {
+    border: 1px solid black;
+}
+
+.visitor-list-container th, td {
+    padding: 10px;
+    text-align: left;
+}
+</style>  */
