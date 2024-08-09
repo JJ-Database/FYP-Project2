@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hard-coded Line Graph Example</title>
+    <style>
+        .chart-container {
+            width: 80%;
+            margin: 50px auto;
+            text-align: center;
+        }
+
+        canvas {
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="chart-container">
+        <h2>Hard-coded Line Graph Example</h2>
+        <canvas id="lineChart"></canvas>
+    </div>
+
+    <!-- Include Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sample data
+            const dates = ['01/07/2024', '02/07/2024', '03/07/2024', '04/07/2024', '05/07/2024'];
+            const visits = [5, 7, 3, 9, 6]; // Number of visits on corresponding dates
+
+            // Get canvas element
+            const ctx = document.getElementById('lineChart').getContext('2d');
+
+            // Create line chart
+            const lineChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: 'Number of Visits',
+                        data: visits,
+                        borderColor: 'blue',
+                        backgroundColor: 'rgba(0, 0, 255, 0.1)',
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Date'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Number of Visits'
+                            },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

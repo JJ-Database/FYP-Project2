@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Module</title>
+    <script src="js/script.js"></script>
+    <script type="module" src="js/sideNav.js"></script>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js';
+        import { getDatabase, ref, orderByKey, limitToLast, query, get, set } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js';
+        import { getStorage } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-storage.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDUrwSd3rJvJvJKe0gOG5E0U68ow-fPGOLPA",
+            authDomain: "loginhtml-b6a38.firebaseapp.com",
+            databaseURL: "https://loginhtml-b6a38-default-rtdb.firebaseio.com",
+            projectId: "loginhtml-b6a38",
+            storageBucket: "loginhtml-b6a38.appspot.com",
+            messagingSenderId: "888243437180",
+            appId: "1:888243437180:web:5faad9d368f11ee6b1d3f9",
+            measurementId: "G-VXJT8PMFPF"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const storage = getStorage(app);
+
+        // Function to generate new payment ID
+        const generatePaymentID = () => {
+            return new Promise((resolve, reject) => {
+                const paymentRef = ref(db, 'payments');
+                const paymentQuery = query(paymentRef, orderByKey(), limitToLast(1));
+
+                get(paymentQuery).then((snapshot) => {
+                    let lastPaymentID = 'P0000';
+                    snapshot.forEach((childSnapshot) => {
+                        lastPaymentID = childSnapshot.key;
+                    });
+
+                    const newPaymentID = 'P' + String(parseInt(lastPaymentID.substring(1)) + 1).padStart(4, '0');
+                    resolve(newPaymentID);
+                }).catch(reject);
+            });
+        };
+
+        // Function to save payment
+        const savePayment = (block, floor, unit, unitNo, paymentCategory, amount, paymentDetails, timestamp, status) => {
+            generatePaymentID().then((newPaymentID) => {
+                const paymentData = {
+                    block,
+                    floor,
+                    unit,
+                    unitNo,
+                    paymentCategory,
+                    amount,
+                    paymentDetails,
+                    timestamp,
+                    status,
+                    paymentID: newPaymentID,
+                    unitID: unitNo
+                };
+
+                set(ref(db, `payments/${newPaymentID}`), paymentData).then(() => {
+                    console.log('Payment saved successfully for unit:', unitNo);
+                }).catch((error) => {
+                    console.error('Payment could not be saved:', error.message);
+                });
+            }).catch((error) => {
+                console.error('Error generating payment ID:', error);
+            });
+        };
+
+        // Function to handle block selection and generate payments for all units
+        function handleBlockSelection() {
+            const block = document.getElementById('block').value;
+            const paymentCategory = document.getElementById('paymentCategory').value;
+            const paymentDetails = document.getElementById('paymentDetails').value;
+            const timestamp = document.getElementById('timestamp').value;
+            const status = 'unpaid';
+            let baseAmount;
+
+            switch (block) {
+                case 'Block A':
+                    baseAmount = 100; // Default amount for Block A
+                    break;
+                case 'Block B':
+                    baseAmount = 120; // 20% increment for Block B
+                    break;
+                case 'Block C':
+                    baseAmount = 130; // 30% increment for Block C
+                    break;
+                default:
+                    baseAmount = 100; // Default amount
+                    break;
+            }
+
+            for (let floor = 13; floor <= 25; floor++) {
+                for (let unit = 1; unit <= 20; unit++) {
+                    const unitNo = `${block.split(' ')[1]}-${floor.toString().padStart(2, '0')}-${unit.toString().padStart(2, '0')}`;
+                    savePayment(block, floor, unit, unitNo, paymentCategory, baseAmount, paymentDetails, timestamp, status);
+                }
+            }
+
+            alert('Payments for all units in the block have been generated.');
+        }
+
+        document.getElementById('block').addEventListener('change', handleBlockSelection);
+
+        // Close dropdown when clicking outside of it
+        document.addEventListener('click', (e) => {
+            const dropdownMenu = document.getElementById('dropdownMenu');
+            if (e.target.id !== 'usernameBtn' && !dropdownMenu.contains(e.target)) {
+                dropdownMenu.style.display = 'none';
+            }
+        });
+
+        // Toggle dropdown menu
+        document.getElementById('usernameBtn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            const dropdownMenu = document.getElementById('dropdownMenu');
+            dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
+        });
+    </script>
+    <script src="js/script.js"></script>
+    <script type="module" src="js/sideNav.js"></script>
+    <link rel="stylesheet" href="css/nav.css">
+    <link rel="stylesheet" href="css/addNewFacility.css">
+</head>
+<body>
+    <!-- Left Navigation Bar -->
+    <div class="left-nav">
+        <a href="dashboard.html" class="logo-link">
+            <img src="img/Synergy_transparent.png" alt="Synergy Logo" class="logo-img">
+        </a>
+        <button class="dropdown-btn">Bulletin</button>
+        <div class="dropdown-container">
+            <a href="addNewBulletIn.html">Add Bulletin</a>
+            <a href="bulletInList.html">Manage Bulletin</a>
+        </div>
+        <button class="dropdown-btn">Payment</button>
+        <div class="dropdown-container">
+            <a href="paymentList.html">Manage Payment</a>
+            <a href="addPayment.html">Add Payment</a>
+        </div>
+        <button class="dropdown-btn">Visitors</button>
+        <div class="dropdown-container">
+            <a href="visitorCheckInOut.html">Check Out Visitor</a>
+            <a href="visitorManagement.html">Visitor Management</a>
+            <a href="updateStatusVisitor.html">Update Status Visitor</a>
+        </div>
+        <button class="dropdown-btn">Facility</button>
+        <div class="dropdown-container">
+            <a href="addNewFacility.html">Add Facility</a>
+            <a href="facilityList.html">Manage Facility</a>
+        </div>
+        <button class="dropdown-btn">Complaint</button>
+        <div class="dropdown-container">
+            <a href="reportList.html">Manage Complaint</a>
+        </div>
+    </div>
+
+    <!-- Top Navigation Bar -->
+    <div class="top-nav">
+        <div class="website-name">Smart Resident Management System</div>
+        <div class="username">
+            <button id="usernameBtn">username</button>
+            <div class="dropdown" id="dropdownMenu">
+                <a href="myAccount.html">My Account</a>
+                <a href="loginForm.html">Log Out</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <h1 class="txtWelcome">Payment Module</h1>
+        
+        <div class="form-container">
+            <form id="paymentForm">
+                <label for="block">Block</label>
+                <select id="block" name="block" required>
+                    <option value="Block A">Block A</option>
+                    <option value="Block B">Block B</option>
+                    <option value="Block C">Block C</option>
+                </select>
+
+                <label for="paymentCategory">Payment Category</label>
+                <select id="paymentCategory" name="paymentCategory" required>
+                    <option value="Management Fee">Management Fee</option>
+                    <option value="Sink Fund">Sink Fund</option>
+                    <option value="Insurance Fee">Insurance Fee</option>
+                    <option value="Maintenance Fee">Maintenance Fee</option>
+                    <option value="Other">Other</option> <!-- Added option for "Other" -->
+                </select>
+
+                <label for="amount">Amount</label>
+                <input type="text" id="amount" name="amount" readonly>
+
+                <label for="paymentDetails">Payment Details</label>
+                <input type="text" id="paymentDetails" name="paymentDetails">
+
+                <label for="timestamp">Date</label>
+                <input type="date" id="timestamp" name="timestamp">
+
+                <button type="submit">Save</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

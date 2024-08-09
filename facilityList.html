@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Resident Management System</title>
+    <script src="js/script.js"></script>
+    <script type="module" src="js/sideNav.js"></script>
+    <link rel="stylesheet" href="css/nav.css">
+    <link rel="stylesheet" href="css/paymentList.css">
+    <style>
+        .main-content {
+            margin-left: 200px;
+            margin-top: 50px;
+            padding: 2em;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        .txtWelcome {
+            text-decoration: underline;
+        }
+
+        .facility-list-container {
+            display: block;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .facility-list-container table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0; /* Adjust to remove unwanted margin */
+        }
+
+        .facility-list-container th, .facility-list-container td {
+            border: 1px solid black;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .facility-list-container .facility-img-container {
+            text-align: center;
+            font-size: 18px; /* Adjust the font size for the text above the image */
+        }
+
+        .facility-list-container img {
+            width: 200px;
+            height: auto;
+            border-radius: 5px;
+        }
+
+        .action-buttons button {
+            margin-right: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            border: none;
+            border-radius: 10px; /* Updated border radius */
+            font-size: 14px;
+            color: white;
+        }
+
+        .edit-btn {
+            background-color: #4CAF50;
+            border-radius: 10px;
+            height: 50px;
+            width: 80px;
+        }
+
+        .edit-btn:hover {
+            background-color: #45a049;
+        }
+
+        .delete-btn {
+            background-color: #f44336;
+            border-radius: 10px;
+            height: 50px;
+            width: 80px;
+        }
+
+        .delete-btn:hover {
+            background-color: #da190b;
+        }
+
+        .add-new-btn {
+            background-color: #008CBA;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+            border: none;
+            border-radius: 10px; /* Updated border radius */
+        }
+
+        .add-new-btn:hover {
+            background-color: #007bb5;
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Left Navigation Bar -->
+    <div class="left-nav">
+        <a href="dashboard.html" class="logo-link">
+            <img src="img/Synergy_transparent.png" alt="Synergy Logo" class="logo-img">
+        </a>
+        <button class="dropdown-btn">Bulletin</button>
+        <div class="dropdown-container">
+            <a href="addNewBulletIn.html">Add Bulletin</a>
+            <a href="bulletInList.html">Manage Bulletin</a>
+        </div>
+        <button class="dropdown-btn">Payment</button>
+        <div class="dropdown-container">
+            <a href="paymentList.html">Manage Payment</a>
+            <a href="addPayment.html">Add Payment</a>
+        </div>
+        <button class="dropdown-btn">Visitors</button>
+        <div class="dropdown-container">
+            <a href="visitorCheckInOut.html">Check Out Visitor</a>
+            <a href="visitorManagement.html">Visitor Management</a>
+            <a href="updateStatusVisitor.html">Update Status Visitor</a>
+        </div>
+        <button class="dropdown-btn">Facility</button>
+        <div class="dropdown-container">
+            <a href="addNewFacility.html">Add Facility</a>
+            <a href="facilityList.html">Manage Facility</a>
+        </div>
+        <button class="dropdown-btn">Complaint</button>
+        <div class="dropdown-container">
+            <a href="reportList.html">Manage Complaint</a>
+        </div>
+    </div>
+    
+
+    <!-- Top Navigation Bar -->
+    <div class="top-nav">
+        <div class="website-name">Smart Resident Management System</div>
+        <div class="username">
+            <button id="usernameBtn">username</button>
+            <div class="dropdown" id="dropdownMenu">
+                <a href="myAccount.html">My Account</a>
+                <a href="loginForm.html">Log Out</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <h1 class="txtWelcome">Facility List</h1>
+        <a href="addNewFacility.html" class="add-new-btn">Add New</a>
+        <div class="facility-list-container">
+            <table id="facilityListTable">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Image</th>
+                        <th>Facility Info</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Facility data will be populated here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+        import { getDatabase, ref, get, remove } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
+        import { getStorage, ref as storageRef, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-storage.js";
+    
+        const firebaseConfig = {
+            apiKey: "AIzaSyDUrwSd3rJvJvJKe0gOG5E0U68ow-fPGOLPA",
+            authDomain: "loginhtml-b6a38.firebaseapp.com",
+            databaseURL: "https://loginhtml-b6a38-default-rtdb.firebaseio.com",
+            projectId: "loginhtml-b6a38",
+            storageBucket: "loginhtml-b6a38.appspot.com",
+            messagingSenderId: "888243437180",
+            appId: "1:888243437180:web:5faad9d368f11ee6b1d3f9",
+            measurementId: "G-VXJT8PMFPF"
+        };
+    
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const storage = getStorage(app);
+    
+        document.addEventListener('DOMContentLoaded', function() {
+            loadFacilities();
+        });
+    
+        async function loadFacilities() {
+            const dbRef = ref(db, 'Facility'); // Adjust this path based on your database structure
+    
+            try {
+                const snapshot = await get(dbRef);
+                const facilityTableBody = document.getElementById('facilityListTable').getElementsByTagName('tbody')[0];
+                facilityTableBody.innerHTML = ''; // Clear the table body
+    
+                if (snapshot.exists()) {
+                    const facilities = snapshot.val();
+                    let index = 1;
+    
+                    for (const key in facilities) {
+                        const facility = facilities[key];
+                        const row = facilityTableBody.insertRow();
+    
+                        row.insertCell(0).innerText = index++;
+                        const imgCell = row.insertCell(1);
+                        const infoCell = row.insertCell(2);
+                        const actionCell = row.insertCell(3);
+    
+                        // Container for image and category text
+                        const imgContainer = document.createElement('div');
+                        imgContainer.classList.add('facility-img-container');
+                        const imgCategoryText = document.createElement('div');
+                        imgCategoryText.innerText = facility.typeOfFacility;
+                        imgContainer.appendChild(imgCategoryText);
+    
+                        // Retrieve and display image from Firebase Storage
+                        const img = document.createElement('img');
+                        const filePath = facility.photo; // Use the photo attribute from the facility data
+                        const imgRef = storageRef(storage, filePath);
+    
+                        try {
+                            const url = await getDownloadURL(imgRef);
+                            img.src = url;
+                        } catch (error) {
+                            console.error('Error getting download URL:', error);
+                            img.alt = "Image not found";
+                        }
+    
+                        imgContainer.appendChild(img);
+                        imgCell.appendChild(imgContainer);
+    
+                        // Display facility info
+                        infoCell.innerHTML = `
+                            Facility ID     : ${facility.facilityID}<br>
+                            Location        : ${facility.location}<br>
+                            Max of Pax      : ${facility.maxOfPax}<br>
+                            Remarks         : ${facility.remarks}<br>
+                        `;
+    
+                        // Action buttons
+                        actionCell.innerHTML = `
+                            <button class="edit-btn" onclick="editFacility('${key}')">Edit</button>
+                            <button class="delete-btn" onclick="deleteFacility('${key}')">Delete</button>
+                        `;
+                    }
+                } else {
+                    const row = facilityTableBody.insertRow();
+                    const cell = row.insertCell(0);
+                    cell.colSpan = 4;
+                    cell.innerText = "No facilities found";
+                    cell.style.textAlign = 'center';
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                alert('An error occurred while fetching data. Please try again.');
+            }
+        }
+    
+        // Define global functions
+        window.editFacility = function(facilityID) {
+            // Store facilityID in localStorage and redirect to modifyFacility.html
+            localStorage.setItem('facilityID', facilityID);
+            window.location.href = 'modifyFacility.html';
+        };
+    
+        window.deleteFacility = async function(facilityID) {
+            // Confirm deletion
+            const confirmDelete = confirm('Are you sure you want to delete this facility?');
+            if (confirmDelete) {
+                try {
+                    // Remove the facility from Firebase Database
+                    const facilityRef = ref(db, 'Facility/' + facilityID);
+                    await remove(facilityRef);
+                    
+                    // Optionally, delete the associated photo from Firebase Storage
+                    // const facilitySnapshot = await get(facilityRef);
+                    // const facility = facilitySnapshot.val();
+                    // if (facility.photo) {
+                    //     const photoRef = storageRef(storage, facility.photo);
+                    //     await deleteObject(photoRef);
+                    // }
+    
+                    alert('Facility deleted successfully!');
+                    loadFacilities(); // Reload the facilities list
+                } catch (error) {
+                    console.error('Error deleting facility:', error);
+                    alert('An error occurred while deleting the facility. Please try again.');
+                }
+            }
+        };
+    </script>
+    
+</body>
+</html>

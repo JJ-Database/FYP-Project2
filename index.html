@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Full Image Background</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+        }
+        
+        .bg {
+            /* Full height */
+            height: 100%;
+            /* Full width */
+            width: 100%;
+            /* The image used */
+            background-image: url('img/newYork.jpg');
+            /* Center and scale the image nicely */
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            /* Position the image in the background */
+            position: relative;
+        }
+        
+        .overlay-image {
+            /* Position the overlay image */
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 500px; /* Adjust as needed */
+            height: auto;
+            z-index: 1; /* Ensure it's above the background */
+        }
+    </style>
+</head>
+<body>
+    <div class="bg">
+        <img src="img/Synergy_transparent.png" alt="Overlay Image" class="overlay-image">
+    </div>
+
+    <script>
+        // Redirect after 2 seconds
+        setTimeout(function() {
+            window.location.href = 'rolesSelected.html';
+        }, 2000);
+    </script>
+</body>
+</html>

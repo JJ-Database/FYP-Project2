@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/visitorManagement.css">
+    <link rel="stylesheet" href="css/nav.css">
+    <script src="js/script.js"></script>
+    <script type="module" src="js/sideNav.js"></script>
+    
+    <title>Smart Resident Management System</title>
+    <style>
+        /* modify and delete button */
+        .modify-btn, .delete-btn, .checkin-btn, .checkout-btn {
+            padding: 8px 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+        .checkin-btn:hover, .checkout-btn:hover {
+            width: 80px;
+            height:50px;
+        }
+        .delete-btn {
+            background-color: #f44336;
+        }
+        .checkin-btn {
+            background-color: #2196F3;
+        }
+        .checkout-btn {
+            background-color: #FF9800;
+        }
+        .checkout-btn[disabled] {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <!-- Left Navigation Bar -->
+    <div class="left-nav">
+        <a href="dashboard.html" class="logo-link">
+            <img src="img/Synergy_transparent.png" alt="Synergy Logo" class="logo-img">
+        </a>
+        <button class="dropdown-btn">Bulletin</button>
+        <div class="dropdown-container">
+            <a href="addNewBulletIn.html">Add Bulletin</a>
+            <a href="bulletInList.html">Manage Bulletin</a>
+        </div>
+        <button class="dropdown-btn">Payment</button>
+        <div class="dropdown-container">
+            <a href="paymentList.html">Manage Payment</a>
+            <a href="addPayment.html">Add Payment</a>
+        </div>
+        <button class="dropdown-btn">Visitors</button>
+        <div class="dropdown-container">
+            <a href="visitorCheckInOut.html">Check Out Visitor</a>
+            <a href="visitorManagement.html">Visitor Management</a>
+            <a href="updateStatusVisitor.html">Update Status Visitor</a>
+        </div>
+        <button class="dropdown-btn">Facility</button>
+        <div class="dropdown-container">
+            <a href="addNewFacility.html">Add Facility</a>
+            <a href="facilityList.html">Manage Facility</a>
+        </div>
+        <button class="dropdown-btn">Complaint</button>
+        <div class="dropdown-container">
+            <a href="reportList.html">Manage Complaint</a>
+        </div>
+    </div>
+
+    <!-- Top Navigation Bar -->
+    <div class="top-nav">
+        <div class="website-name">Smart Resident Management System</div>
+        <div class="username">
+            <button id="usernameBtn">username</button>
+            <div class="dropdown" id="dropdownMenu">
+                <a href="myAccount.html">My Account</a>
+                <a href="loginForm.html">Log Out</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <h1 class="txtWelcome">Visitor Check-In / Check-Out</h1>
+        <div class="visitor-btn-container">
+            <button class="visitor-btn" id="listAllVisitorsBtn">List All Visitors</button>
+            <button class="visitor-btn" id="addNewVisitorBtn">Add New Visitor</button>
+        </div>
+
+        <div class="form-container" id="visitorFormContainer" style="display: none;">
+            <form id="visitorForm">
+                <label for="category">Category</label>
+                <select id="category" name="category" required>
+                    <option value="">Select Category</option>
+                </select>
+
+                <label for="fullName">Full Name</label>
+                <input type="text" id="fullName" name="fullName" placeholder="Visitor's full name.." required>
+
+                <label for="phoneNumber">Phone Number</label>
+                <input type="text" id="phoneNumber" name="phoneNumber" placeholder="Visitor's phone number.." required>
+
+                <label for="idCardNumber">ID Card Number</label>
+                <input type="text" id="idCardNumber" name="idCardNumber" placeholder="Visitor's ID card number.." required>
+
+                <label for="vehicleNumber">Vehicle Number</label>
+                <input type="text" id="vehicleNumber" name="vehicleNumber" placeholder="Visitor's vehicle number..">
+
+                <label for="remarks">Remarks</label>
+                <input type="text" id="remarks" name="remarks" placeholder="Any remarks..">
+
+                <label for="visitDate">Visit Date</label>
+                <input type="date" id="visitDate" name="visitDate" required readonly>
+
+                <div>
+                    <button type="submit">Submit</button>
+                    <button type="button" class="cancelbtn" onclick="resetForm()">Cancel</button>
+                </div>
+            </form>
+        </div>
+        <div class="success-message" id="successMessage" style="display: none;">Registration successful!</div>
+
+        <div class="visitor-list-container" id="visitorListContainer">
+            <h2>Visitor List</h2>
+            <label for="searchDate">Select Date:</label>
+            <input type="date" id="searchDate" name="searchDate" readonly><br/>
+            <label for="categoryFilter">Select Category:</label>
+            <select id="categoryFilter" name="categoryFilter">
+                <option value="">All Categories</option>
+                
+            </select>
+            <button id="searchVisitorsBtn">Search</button>
+            <table id="visitorListTable">
+                <thead>
+                    <tr>
+                        <th>Visitor Number</th>
+                        <th>Full Name</th>
+                        <th>Phone Number</th>
+                        <th>ID Card Number</th>
+                        <th>Vehicle Number</th>
+                        <th>Category</th>
+                        <th>Visit Date</th>
+                        <th>Remarks</th>
+                        <th>Check-In</th>
+                        <th>Check-Out</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Visitor data will be populated here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+        import { getDatabase, ref, set, get, update } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDUrwSd3rJvJKe0gOG5E0U68ow-fPGOLPA",
+            authDomain: "loginhtml-b6a38.firebaseapp.com",
+            databaseURL: "https://loginhtml-b6a38-default-rtdb.firebaseio.com",
+            projectId: "loginhtml-b6a38",
+            storageBucket: "loginhtml-b6a38.appspot.com",
+            messagingSenderId: "888243437180",
+            appId: "1:888243437180:web:5faad9d368f11ee6b1d3f9",
+            measurementId: "G-VXJT8PMFPF"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Fetch visitor categories from Firebase
+            const categoriesRef = ref(db, 'settings/visitorCategory');
+            const snapshot = await get(categoriesRef);
+            const categories = snapshot.val();
+
+            console.log("Fetched categories:", categories); // Debugging
+
+            // Populate the dropdown menu with categories
+            const categoryDropdown = document.getElementById('category');
+            const categoryFilter = document.getElementById('categoryFilter');
+            for (const category in categories) {
+                const option = document.createElement('option');
+                option.value = category;
+                option.textContent = categories[category];
+                categoryDropdown.appendChild(option);
+                categoryFilter.appendChild(option.cloneNode(true));
+            }
+
+            // Automatically set today's date and list visitors
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('searchDate').value = today;
+            document.getElementById('visitDate').value = today;
+            searchVisitorsByDate();
+        });
+
+        // JavaScript to handle dropdown toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            var usernameBtn = document.getElementById('usernameBtn');
+            var dropdownMenu = document.getElementById('dropdownMenu');
+            var addNewVisitorBtn = document.getElementById('addNewVisitorBtn');
+            var listAllVisitorsBtn = document.getElementById('listAllVisitorsBtn');
+            var searchVisitorsBtn = document.getElementById('searchVisitorsBtn');
+
+            usernameBtn.addEventListener('click', function() {
+                dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
+            });
+
+            addNewVisitorBtn.addEventListener('click', addNewVisitor);
+            listAllVisitorsBtn.addEventListener('click', listAllVisitors);
+            searchVisitorsBtn.addEventListener('click', searchVisitorsByDate);
+
+            // Add event listener to form submission
+            const form = document.getElementById('visitorForm');
+            form.addEventListener('submit', async function(event) {
+                event.preventDefault();
+
+                // Get the latest visitor number
+                const latestVisitorNum = await getLatestVisitorNumber();
+                const newVisitorNum = `V${String(latestVisitorNum + 1).padStart(4, '0')}`;
+
+                // Fetch the category name based on the selected key
+                const categoryDropdown = document.getElementById('category');
+                const categoryKey = form.category.value;
+                const categoryName = categoryDropdown.options[categoryDropdown.selectedIndex].text;
+
+                // Format visit date as dd/mm/yyyy
+                const visitDate = new Date(form.visitDate.value);
+                const formattedVisitDate = `${visitDate.getDate().toString().padStart(2, '0')}/${(visitDate.getMonth() + 1).toString().padStart(2, '0')}/${visitDate.getFullYear()}`;
+
+                const visitorData = {
+                    category: categoryName, // Store category name instead of key
+                    fullName: form.fullName.value,
+                    phoneNumber: form.phoneNumber.value,
+                    idCardNumber: form.idCardNumber.value,
+                    vehicleNumber: form.vehicleNumber.value,
+                    remarks: form.remarks.value,
+                    visitorID: newVisitorNum,
+                    visitDate: formattedVisitDate // Store the formatted date
+                };
+
+                await set(ref(db, `visitors/${newVisitorNum}`), visitorData);
+                alert(`Visitor ${newVisitorNum} added successfully!`);
+                form.reset();
+            });
+        });
+
+        async function getLatestVisitorNumber() {
+            const visitorsRef = ref(db, 'visitors');
+            const snapshot = await get(visitorsRef);
+            const visitors = snapshot.val();
+            if (!visitors) {
+                return 0;
+            }
+
+            const visitorNumbers = Object.keys(visitors).map(visitorNum => parseInt(visitorNum.substring(1)));
+            return Math.max(...visitorNumbers);
+        }
+
+        async function searchVisitorsByDate() {
+            const searchDate = document.getElementById('searchDate').value;
+            const categoryFilter = document.getElementById('categoryFilter').value;
+            const formattedSearchDate = new Date(searchDate).toLocaleDateString('en-GB');
+
+            const visitorsRef = ref(db, 'visitors');
+            const snapshot = await get(visitorsRef);
+            const visitors = snapshot.val();
+
+            console.log("Fetched visitors:", visitors); // Debugging
+
+            const visitorListTable = document.getElementById('visitorListTable').getElementsByTagName('tbody')[0];
+            visitorListTable.innerHTML = ''; // Clear existing table rows
+
+            for (const visitorNum in visitors) {
+                const visitor = visitors[visitorNum];
+                if ((visitor.visitDate === formattedSearchDate) && (categoryFilter === "" || visitor.category === categoryFilter)) {
+                    const row = visitorListTable.insertRow();
+                    row.insertCell(0).textContent = visitorNum;
+                    row.insertCell(1).textContent = visitor.fullName;
+                    row.insertCell(2).textContent = visitor.phoneNumber;
+                    row.insertCell(3).textContent = visitor.idCardNumber;
+                    row.insertCell(4).textContent = visitor.vehicleNumber;
+                    row.insertCell(5).textContent = visitor.category;
+                    row.insertCell(6).textContent = visitor.visitDate;
+                    row.insertCell(7).textContent = visitor.remarks;
+
+                    const checkInCell = row.insertCell(8);
+                    const checkInButton = document.createElement('button');
+                    checkInButton.textContent = visitor.checkInTime || 'Check-In';
+                    checkInButton.classList.add('checkin-btn');
+                    checkInButton.onclick = () => handleCheckIn(visitorNum, checkInButton);
+                    checkInCell.appendChild(checkInButton);
+
+                    const checkOutCell = row.insertCell(9);
+                    const checkOutButton = document.createElement('button');
+                    checkOutButton.textContent = visitor.checkOutTime || 'Check-Out';
+                    checkOutButton.classList.add('checkout-btn');
+                    checkOutButton.disabled = !visitor.checkInTime; // Disable if no check-in time
+                    checkOutButton.onclick = () => handleCheckOut(visitorNum, checkOutButton);
+                    checkOutCell.appendChild(checkOutButton);
+                }
+            }
+        }
+
+        async function handleCheckIn(visitorNum, checkInButton) {
+            const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            await update(ref(db, `visitors/${visitorNum}`), { checkInTime: currentTime });
+            checkInButton.textContent = currentTime;
+
+            // Enable the corresponding check-out button
+            const checkOutButton = checkInButton.parentNode.nextElementSibling.firstChild;
+            checkOutButton.disabled = false;
+        }
+
+        async function handleCheckOut(visitorNum, checkOutButton) {
+            const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            await update(ref(db, `visitors/${visitorNum}`), { checkOutTime: currentTime });
+            checkOutButton.textContent = currentTime;
+        }
+
+        function addNewVisitor() {
+            document.getElementById('visitorFormContainer').style.display = 'block';
+            document.getElementById('visitorListContainer').style.display = 'none';
+        }
+
+        function listAllVisitors() {
+            document.getElementById('visitorFormContainer').style.display = 'none';
+            document.getElementById('visitorListContainer').style.display = 'block';
+            searchVisitorsByDate();
+        }
+
+        function resetForm() {
+            document.getElementById('visitorForm').reset();
+            document.getElementById('visitorFormContainer').style.display = 'none';
+            document.getElementById('visitorListContainer').style.display = 'block';
+        }
+    </script>
+</body>
+</html>

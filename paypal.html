@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/nav.css">
+    <link rel="stylesheet" href="css/paypal.css">
+    <script type="module" src="js/sideNav.js"></script>
+    <script type="module" src="js/script.js"></script>
+    <script src="https://www.paypal.com/sdk/js?client-id=BAAwsMlpJnJ75PVQqZdj_mNI_CXDZuudXeJSgEYNVpHQlna3o0OgiMgfrjvr2wINW1-TqJsqIQxhA4P6WY&components=hosted-buttons&disable-funding=venmo&currency=MYR"></script>
+    <title>Smart Resident Management System</title>
+    <style>
+        .main-content {
+            margin-left: 200px;
+            margin-top: 50px;
+            padding: 2em;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+        .txtWelcome {
+            text-decoration: underline;
+        }
+        .payment-btn-container {
+            margin-bottom: 20px;
+        }
+        .payment-btn {
+            margin-right: 10px;
+        }
+        .form-container {
+            display: none;
+        }
+        .success-message {
+            display: none;
+            color: green;
+        }
+        .error-message {
+            display: none;
+            color: red;
+        }
+        .balance-message {
+            display: none;
+            color: blue;
+        }
+    </style>
+</head>
+<body>
+    <!-- Left Navigation Bar -->
+    <div class="left-nav">
+        <a href="dashboard.html" class="logo-link">
+            <img src="img/Synergy_transparent.png" alt="Synergy Logo" class="logo-img">
+        </a>
+        <button class="dropdown-btn">Bulletin</button>
+        <div class="dropdown-container">
+            <a href="addNewBulletIn.html">Add Bulletin</a>
+            <a href="bulletInList.html">Manage Bulletin</a>
+        </div>
+        <button class="dropdown-btn">Payment</button>
+        <div class="dropdown-container">
+            <a href="paymentList.html">Manage Payment</a>
+            <a href="addPayment.html">Add Payment</a>
+        </div>
+        <button class="dropdown-btn">Visitors</button>
+        <div class="dropdown-container">
+            <a href="visitorCheckInOut.html">Check Out Visitor</a>
+            <a href="visitorManagement.html">Visitor Management</a>
+            <a href="updateStatusVisitor.html">Update Status Visitor</a>
+        </div>
+        <button class="dropdown-btn">Facility</button>
+        <div class="dropdown-container">
+            <a href="addNewFacility.html">Add Facility</a>
+            <a href="facilityList.html">Manage Facility</a>
+        </div>
+        <button class="dropdown-btn">Complaint</button>
+        <div class="dropdown-container">
+            <a href="reportList.html">Manage Complaint</a>
+        </div>
+    </div>
+
+    <!-- Top Navigation Bar -->
+    <div class="top-nav">
+        <div class="website-name">Smart Resident Management System</div>
+        <div class="username">
+            <button id="usernameBtn">username</button>
+            <div class="dropdown" id="dropdownMenu">
+                <a href="myAccount.html">My Account</a>
+                <a href="loginForm.html">Log Out</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <h1 class="txtWelcome">Payment Options</h1>
+        <div class="payment-btn-container">
+            <button class="payment-btn" id="cashPaymentBtn">Cash Payment</button>
+            <button class="payment-btn" id="onlinePaymentBtn">Online Payment</button>
+        </div>
+
+        <!-- Cash Payment Form -->
+        <div class="form-container" id="cashPaymentFormContainer">
+            <form id="cashPaymentForm">
+                <label for="paymentID">Payment ID</label>
+                <input type="text" id="paymentID" name="paymentID" readonly>
+
+                <label for="amountDue">Amount Due</label>
+                <input type="text" id="amountDue" name="amountDue" readonly>
+
+                <label for="paymentCategory">Payment Category</label>
+                <input type="text" id="paymentCategory" name="paymentCategory" readonly>
+
+                <label for="paymentDetails">Payment Details</label>
+                <input type="text" id="paymentDetails" name="paymentDetails" readonly>
+
+                <label for="bookingID">Booking ID</label>
+                <input type="text" id="bookingID" name="bookingID" readonly>
+
+                <label for="amountToPay">Amount to Pay</label>
+                <input type="number" id="amountToPay" name="amountToPay" placeholder="Enter amount to pay" required>
+
+                <div class="error-message" id="errorMessage">Payment unsuccessful! Amount to pay is less than the amount due.</div>
+                <div class="balance-message" id="balanceMessage">Remaining balance: </div>
+                <div class="success-message" id="successMessage">Payment successful!</div>
+
+                <div>
+                    <button type="submit">Pay</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Online Payment Container -->
+        <div class="form-container" id="onlinePaymentContainer">
+            <div id="paypal-container-B2LPADM35QVKW"></div>
+        </div>
+    </div>
+    <script>
+        paypal.HostedButtons({
+              hostedButtonId: "B2LPADM35QVKW",
+          }).render("#paypal-container-B2LPADM35QVKW")
+    </script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
+        // import paypal from "https://www.paypal.com/sdk/js?client-id=BAAwsMlpJnJ75PVQqZdj_mNI_CXDZuudXeJSgEYNVpHQlna3o0OgiMgfrjvr2wINW1-TqJsqIQxhA4P6WY&components=hosted-buttons&disable-funding=venmo&currency=MYR";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDUrwSd3rJvJKe0gOG5E0U68ow-fPGOLPA",
+            authDomain: "loginhtml-b6a38.firebaseapp.com",
+            databaseURL: "https://loginhtml-b6a38-default-rtdb.firebaseio.com",
+            projectId: "loginhtml-b6a38",
+            storageBucket: "loginhtml-b6a38.appspot.com",
+            messagingSenderId: "888243437180",
+            appId: "1:888243437180:web:5faad9d368f11ee6b1d3f9",
+            measurementId: "G-VXJT8PMFPF"
+        };
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const cashPaymentBtn = document.getElementById('cashPaymentBtn');
+            const onlinePaymentBtn = document.getElementById('onlinePaymentBtn');
+            const cashPaymentFormContainer = document.getElementById('cashPaymentFormContainer');
+            const onlinePaymentContainer = document.getElementById('onlinePaymentContainer');
+
+            cashPaymentBtn.addEventListener('click', function() {
+                cashPaymentFormContainer.style.display = 'block';
+                onlinePaymentContainer.style.display = 'none';
+                loadPaymentDetails();
+            });
+
+            onlinePaymentBtn.addEventListener('click', function() {
+                cashPaymentFormContainer.style.display = 'none';
+                onlinePaymentContainer.style.display = 'block';
+            });
+
+            function loadPaymentDetails() {
+                const paymentID = localStorage.getItem('paymentID');
+                console.log('Retrieved paymentID:', paymentID); // Use console.log for debugging
+
+                if (paymentID) {
+                    const dbRef = ref(db, `payments/${paymentID}`);
+                    get(dbRef).then(snapshot => {
+                        if (snapshot.exists()) {
+                            const payment = snapshot.val();
+                            document.getElementById('paymentID').value = paymentID;
+                            document.getElementById('amountDue').value = payment.amount;
+                            document.getElementById('paymentCategory').value = payment.paymentCategory;
+                            document.getElementById('paymentDetails').value = payment.paymentDetails;
+                            document.getElementById('bookingID').value = payment.paymentCategory === 'Booking Fee' ? payment.bookingID : '';
+                            console.log('Payment details loaded successfully'); // Debugging message
+                        } else {
+                            alert('Payment ID not found');
+                        }
+                    }).catch(error => {
+                        console.error('Error retrieving payment details:', error);
+                    });
+                } else {
+                    alert('No payment ID found in local storage');
+                }
+            }
+            // Call loadPaymentDetails() when the page loads
+            loadPaymentDetails();
+
+            const cashPaymentForm = document.getElementById('cashPaymentForm');
+            cashPaymentForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                const amountToPay = parseFloat(document.getElementById('amountToPay').value);
+                const amountDue = parseFloat(document.getElementById('amountDue').value);
+                const errorMessage = document.getElementById('errorMessage');
+                const successMessage = document.getElementById('successMessage');
+                const balanceMessage = document.getElementById('balanceMessage');
+
+                if (amountToPay < amountDue) {
+                    errorMessage.style.display = 'block';
+                    successMessage.style.display = 'none';
+                    balanceMessage.style.display = 'none';
+                } else {
+                    errorMessage.style.display = 'none';
+                    successMessage.style.display = 'block';
+                    const balance = amountToPay - amountDue;
+                    if (balance > 0) {
+                        balanceMessage.innerText = `Remaining balance: ${balance.toFixed(2)}`;
+                        balanceMessage.style.display = 'block';
+                                        
+                    } else {
+                        balanceMessage.style.display = 'none';
+                    }
+
+                    setTimeout(() => {
+                        window.location.href = 'paymentList.html';
+                    }, 2000);
+                }
+            });
+
+            const usernameBtn = document.getElementById('usernameBtn');
+            const dropdownMenu = document.getElementById('dropdownMenu');
+            usernameBtn.addEventListener('click', function() {
+                dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
+            });
+        });
+    </script>
+</body>
+</html>

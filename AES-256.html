@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AES-256 Encryption/Decryption</title>
+    <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.0.0/crypto-js.js"></script>
+</head>
+<body>
+    <h2>AES-256 Encryption/Decryption</h2>
+    <label for="text">Text to Encrypt:</label>
+    <input type="text" id="text" value="Joshua Chew">
+    <button onclick="encryptText()">Encrypt</button>
+    <br><br>
+    <label for="ciphertext">Ciphertext (Base64):</label>
+    <input type="text" id="ciphertext" readonly>
+    <br><br>
+    <label for="iv">IV (Base64):</label>
+    <input type="text" id="iv" readonly>
+    <br><br>
+    <label for="key">Key (Base64):</label>
+    <input type="text" id="key" readonly>
+    <br><br>
+    <button onclick="decryptText()">Decrypt</button>
+    <br><br>
+    <label for="decrypted">Decrypted Text:</label>
+    <input type="text" id="decrypted" readonly>
+    
+    <script>
+        function encryptText() {
+            const text = document.getElementById('text').value;
+            const key = CryptoJS.lib.WordArray.random(32); // 256-bit key
+            const iv = CryptoJS.lib.WordArray.random(16); // 128-bit IV
+
+            const encrypted = CryptoJS.AES.encrypt(text, key, { iv: iv });
+            const ciphertext = encrypted.ciphertext.toString(CryptoJS.enc.Base64);
+            const ivBase64 = iv.toString(CryptoJS.enc.Base64);
+            const keyBase64 = key.toString(CryptoJS.enc.Base64);
+
+            document.getElementById('ciphertext').value = ciphertext;
+            document.getElementById('iv').value = ivBase64;
+            document.getElementById('key').value = keyBase64;
+        }
+
+        function decryptText() {
+            const ciphertext = document.getElementById('ciphertext').value;
+            const ivBase64 = document.getElementById('iv').value;
+            const keyBase64 = document.getElementById('key').value;
+
+            const key = CryptoJS.enc.Base64.parse(keyBase64);
+            const iv = CryptoJS.enc.Base64.parse(ivBase64);
+
+            const decrypted = CryptoJS.AES.decrypt({ciphertext: CryptoJS.enc.Base64.parse(ciphertext)}, key, { iv: iv });
+            const decryptedText = decrypted.toString(CryptoJS.enc.Utf8);
+
+            document.getElementById('decrypted').value = decryptedText;
+        }
+    </script>
+</body>
+</html>

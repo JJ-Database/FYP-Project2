@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Facility</title>
+    <link rel="stylesheet" href="css/nav.css">
+    <link rel="stylesheet" href="css/addNewFacility.css">
+    <script type="module" src="js/script.js"></script>
+    <script type="module" src="js/sideNav.js"></script>
+</head>
+<body>
+        <!-- Left Navigation Bar -->
+        <div class="left-nav">
+            <a href="dashboard.html" class="logo-link">
+                <img src="img/Synergy_transparent.png" alt="Synergy Logo" class="logo-img">
+            </a>
+            <button class="dropdown-btn">Bulletin</button>
+            <div class="dropdown-container">
+                <a href="addNewBulletIn.html">Add Bulletin</a>
+                <a href="bulletInList.html">Manage Bulletin</a>
+            </div>
+            <button class="dropdown-btn">Payment</button>
+            <div class="dropdown-container">
+                <a href="paymentList.html">Manage Payment</a>
+                <a href="addPayment.html">Add Payment</a>
+            </div>
+            <button class="dropdown-btn">Visitors</button>
+            <div class="dropdown-container">
+                <a href="visitorCheckInOut.html">Check Out Visitor</a>
+                <a href="visitorManagement.html">Visitor Management</a>
+                <a href="updateStatusVisitor.html">Update Status Visitor</a>
+            </div>
+            <button class="dropdown-btn">Facility</button>
+            <div class="dropdown-container">
+                <a href="addNewFacility.html">Add Facility</a>
+                <a href="facilityList.html">Manage Facility</a>
+            </div>
+            <button class="dropdown-btn">Complaint</button>
+            <div class="dropdown-container">
+                <a href="reportList.html">Manage Complaint</a>
+            </div>
+        </div>
+
+    <!-- Top Navigation Bar -->
+    <div class="top-nav">
+        <div class="website-name">Smart Resident Management System</div>
+        <div class="username">
+            <button id="usernameBtn">username</button>
+            <div class="dropdown" id="dropdownMenu">
+                <a href="myAccount.html">My Account</a>
+                <a href="loginForm.html">Log Out</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <h1 class="txtWelcome">Add New Facility</h1>
+        
+        <div class="form-container">
+            <form id="facilityForm">
+                <label for="location">Location</label>
+                <input type="text" id="location" name="location" placeholder="Enter location.." required>
+                
+                <label for="maxOfPax">Max of Pax</label>
+                <input type="number" id="maxOfPax" name="maxOfPax" placeholder="Enter max of pax.." required>
+                
+                <label for="remarks">Remarks</label>
+                <input type="text" id="remarks" name="remarks" placeholder="Enter remarks.." required>
+                
+                <label for="typeOfFacility">Type of Facility</label>
+                <input type="text" id="typeOfFacility" name="typeOfFacility" placeholder="Enter facility.."  required>
+
+                <label for="photo">Photo</label>
+                <input type="file" id="photo" name="photo" accept="image/*" required>
+                <div class="img-preview-container">
+                    <img id="imgPreview" class="img-preview" src="#" alt="Preview Image" style="display:none;">
+                </div>
+
+                <div>
+                    <button type="submit">Add Facility</button>
+                    <button type="button" class="cancelbtn" onclick="resetForm()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js';
+        import { getDatabase, ref, set, query, orderByChild, get } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js';
+        import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-storage.js';
+    
+        const firebaseConfig = {
+            apiKey: "AIzaSyDUrwSd3rJvJvJKe0gOG5E0U68ow-fPGOLPA",
+            authDomain: "loginhtml-b6a38.firebaseapp.com",
+            databaseURL: "https://loginhtml-b6a38-default-rtdb.firebaseio.com",
+            projectId: "loginhtml-b6a38",
+            storageBucket: "loginhtml-b6a38.appspot.com",
+            messagingSenderId: "888243437180",
+            appId: "1:888243437180:web:5faad9d368f11ee6b1d3f9",
+            measurementId: "G-VXJT8PMFPF"
+        };
+    
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const storage = getStorage(app);
+    
+        // Example code to add a new facility
+        document.getElementById('facilityForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            const location = document.getElementById('location').value;
+            const maxOfPax = document.getElementById('maxOfPax').value;
+            const remarks = document.getElementById('remarks').value;
+            const typeOfFacility = document.getElementById('typeOfFacility').value;
+            const photoFile = document.getElementById('photo').files[0];
+            
+            try {
+                // Fetch existing facilities to determine the next ID
+                const facilityRef = ref(db, 'Facility');
+                const facilitySnapshot = await get(facilityRef);
+                
+                let lastFacilityID = 'F0000';
+    
+                facilitySnapshot.forEach((childSnapshot) => {
+                    const facility = childSnapshot.val();
+                    if (facility.facilityID > lastFacilityID) {
+                        lastFacilityID = facility.facilityID;
+                    }
+                });
+    
+                // Generate new ID
+                const newFacilityID = generateNewFacilityID(lastFacilityID);
+    
+                // Upload photo to Firebase Storage
+                const photoFilePath = `files/${photoFile.name}`;
+                const photoRef = storageRef(storage, photoFilePath);
+                await uploadBytes(photoRef, photoFile);
+                const photoURL = await getDownloadURL(photoRef);
+    
+                // Save facility data to Firebase Database
+                const newFacilityRef = ref(db, 'Facility/' + newFacilityID);
+                await set(newFacilityRef, {
+                    facilityID: newFacilityID,
+                    location: location,
+                    maxOfPax: maxOfPax,
+                    remarks: remarks,
+                    typeOfFacility: typeOfFacility,
+                    photo: photoURL
+                });
+    
+                alert('Facility added successfully!');
+                resetForm();
+                window.location.href = 'facilityList.html'
+            } catch (error) {
+                console.error('Detailed Error:', error);
+                alert('An error occurred while adding the facility. Please try again.');
+            }
+        });
+    
+        function generateNewFacilityID(lastFacilityID) {
+            // Extract number and increment
+            let numPart = parseInt(lastFacilityID.slice(1));
+            numPart = (numPart + 1).toString().padStart(4, '0');
+    
+            if (numPart > 9999) {
+                throw new Error('Facility ID range exceeded.');
+            }
+    
+            return 'F' + numPart;
+        }
+    
+        window.resetForm = function() {
+            document.getElementById('facilityForm').reset();
+            document.getElementById('imgPreview').style.display = 'none';
+            window.location.href = 'facilityList.html'; // Redirect to facility list
+
+        }
+    </script>
+    
+    
+
+</body>
+</html>

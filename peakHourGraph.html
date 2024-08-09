@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Line Graph with Firebase Data</title>
+    <style>
+        .chart-container {
+            width: 80%;
+            margin: 50px auto;
+            text-align: center;
+        }
+
+        canvas {
+            border: 1px solid #ccc;
+        }
+
+        .button-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="chart-container">
+        <h2>Visitors Line Graph</h2>
+        <canvas id="lineChart"></canvas>
+    </div>
+
+    <!-- Include Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Include Firebase libraries for compatibility -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDUrwSd3rJvJKe0gOG5E0U68ow-fPGOLPA",
+            authDomain: "loginhtml-b6a38.firebaseapp.com",
+            databaseURL: "https://loginhtml-b6a38-default-rtdb.firebaseio.com",
+            projectId: "loginhtml-b6a38",
+            storageBucket: "loginhtml-b6a38.appspot.com",
+            messagingSenderId: "888243437180",
+            appId: "1:888243437180:web:5faad9d368f11ee6b1d3f9",
+            measurementId: "G-VXJT8PMFPF"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Function to fetch data from Firebase
+        async function fetchData() {
+            const visitorsRef = db.ref('visitors');
+            const snapshot = await visitorsRef.once('value');
+            const visitors = snapshot.val();
+            const hourCounts = Array(24).fill(0); // Initialize array for 24 hours
+
+            console.log("Snapshot:", snapshot);
+            console.log("Visitors Data:", visitors);
+
+            for (let key in visitors) {
+                const checkInTime = visitors[key].checkInTime;
+                if (checkInTime) {
+                    const hour = convertTo24HourFormat(checkInTime);
+                    hourCounts[hour]++;
+                }
+            }
+
+            console.log("Hour Counts:", hourCounts);
+            return hourCounts;
+        }
+
+        // Function to convert 12-hour format to 24-hour format
+        function convertTo24HourFormat(time) {
+            const [timePart, modifier] = time.split(' ');
+            let [hours, minutes] = timePart.split(':');
+            hours = parseInt(hours, 10);
+            if (modifier === 'PM' && hours !== 12) {
+                hours += 12;
+            } else if (modifier === 'AM' && hours === 12) {
+                hours = 0;
+            }
+            return hours;
+        }
+
+        // Get canvas element
+        const ctx = document.getElementById('lineChart').getContext('2d');
+
+        // Create initial empty line chart
+        let lineChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: Array.from({ length: 24 }, (_, i) => `${i}:00`), // Labels for 24 hours
+                datasets: [{
+                    label: 'Number of Check-Ins',
+                    data: [],
+                    borderColor: 'blue',
+                    backgroundColor: 'rgba(0, 0, 255, 0.1)',
+                    tension: 0.3
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Hour'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Number of Check-Ins'
+                        },
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Function to update chart
+        async function updateChart() {
+            const hourCounts = await fetchData();
+
+            console.log("Hour Counts for Chart:", hourCounts);
+
+            lineChart.data.datasets[0].data = hourCounts;
+            lineChart.update();
+        }
+
+        // Load initial chart data
+        document.addEventListener('DOMContentLoaded', () => {
+            updateChart();
+        });
+    </script>
+</body>
+</html>

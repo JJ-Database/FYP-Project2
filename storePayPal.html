@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Resident Management System</title>
+    <script src="js/script.js"></script>
+    <script type="module" src="js/sideNav.js"></script>
+    <script src="https://www.paypal.com/sdk/js?client-id=BAAwsMlpJnJ75PVQqZdj_mNI_CXDZuudXeJSgEYNVpHQlna3o0OgiMgfrjvr2wINW1-TqJsqIQxhA4P6WY&components=hosted-buttons&disable-funding=venmo&currency=MYR"></script>
+    <link rel="stylesheet" href="css/nav.css">
+    <style>
+        .main-content {
+            margin-left: 200px; /* Adjusted to account for the left nav */
+            margin-top: 50px; /* Ensure content starts below the top nav */
+            padding: 2em;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        .txtWelcome {
+            text-decoration: underline;
+        }
+        
+    </style>
+</head>
+<body>
+    <!-- Left Navigation Bar -->
+    <div class="left-nav">
+        <a href="dashboard.html" class="logo-link">
+            <img src="img/Synergy_transparent.png" alt="Synergy Logo" class="logo-img">
+        </a>
+        <button class="dropdown-btn">Bulletin</button>
+        <div class="dropdown-container">
+            <a href="addNewBulletIn.html">Add Bulletin</a>
+            <a href="bulletInList.html">Manage Bulletin</a>
+        </div>
+        <button class="dropdown-btn">Payment</button>
+        <div class="dropdown-container">
+            <a href="paymentList.html">Manage Payment</a>
+            <a href="addPayment.html">Add Payment</a>
+        </div>
+        <button class="dropdown-btn">Visitors</button>
+        <div class="dropdown-container">
+            <a href="visitorCheckInOut.html">Check Out Visitor</a>
+            <a href="visitorManagement.html">Visitor Management</a>
+            <a href="updateStatusVisitor.html">Update Status Visitor</a>
+        </div>
+        <button class="dropdown-btn">Facility</button>
+        <div class="dropdown-container">
+            <a href="addNewFacility.html">Add Facility</a>
+            <a href="facilityList.html">Manage Facility</a>
+        </div>
+        <button class="dropdown-btn">Complaint</button>
+        <div class="dropdown-container">
+            <a href="reportList.html">Manage Complaint</a>
+        </div>
+    </div>
+
+    <!-- Top Navigation Bar -->
+    <div class="top-nav">
+        <div class="website-name">Smart Resident Management System</div>
+        <div class="username">
+            <button id="usernameBtn">username</button>
+            <div class="dropdown" id="dropdownMenu">
+                <a href="myAccount.html">My Account</a>
+                <a href="loginForm.html">Log Out</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <h1 class="txtWelcome">Payment By PayPal</h1>
+        <div id="paymentForm">
+            <div id="paypal-container-B2LPADM35QVKW"></div>
+        </div>
+    </div>
+
+    <script>
+          paypal.HostedButtons({
+                hostedButtonId: "B2LPADM35QVKW",
+            }).render("#paypal-container-B2LPADM35QVKW")
+             
+
+    </script>
+</body>
+</html>
+
+
+
+<!-- <script src="https://www.paypal.com/sdk/js?client-id=BAAwsMlpJnJ75PVQqZdj_mNI_CXDZuudXeJSgEYNVpHQlna3o0OgiMgfrjvr2wINW1-TqJsqIQxhA4P6WY&components=hosted-buttons&disable-funding=venmo&currency=MYR"></script>
+<div id="paypal-container-GE32CQ6F7HTG6"></div>
+<script>
+  paypal.HostedButtons({
+    hostedButtonId: "GE32CQ6F7HTG6",
+  }).render("#paypal-container-GE32CQ6F7HTG6")
+</script> -->
+
+<!-- <script src="https://www.paypal.com/sdk/js?client-id=BAAwsMlpJnJ75PVQqZdj_mNI_CXDZuudXeJSgEYNVpHQlna3o0OgiMgfrjvr2wINW1-TqJsqIQxhA4P6WY&components=hosted-buttons&disable-funding=venmo&currency=MYR"></script>
+<div id="paypal-container-B2LPADM35QVKW"></div>
+<script>
+  paypal.HostedButtons({
+    hostedButtonId: "B2LPADM35QVKW",
+  }).render("#paypal-container-B2LPADM35QVKW")
+</script> -->

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Owner Registration - Smart Resident Management System</title>
+    <link rel="stylesheet" href="css/nav.css">
+    <script src="js/script.js"></script>
+    <script type="module" src="js/sideNav.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+            background-color: white;
+            color: black;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+            margin-top: 50px ;
+        }
+
+        .left-side {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            height: 70px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 10px;
+            width: 100%;
+            background-color: white;
+            color: black;
+        }
+
+        .form-container {
+            padding-top: 20px;
+            padding-bottom: 50px;
+            padding-left: 30px;    
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            width: 100%;
+            max-width: 700px;
+            margin: 0px 80px;
+            overflow: hidden;
+            flex-grow: 1;
+        }
+
+        .fixed-header {
+            position: sticky;
+            top: 0;
+            background-color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        .scrollable-content {
+            overflow-y: auto;
+            max-height: calc(100vh - 200px);
+            padding-left: 10%;
+            background-color: #f7f3e9;
+            padding-top: 30px;
+            padding-bottom: 30px;
+        }
+
+        .scrollable-content::-webkit-scrollbar {
+            display: none;
+        }
+
+        h2 {
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 5px;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        input, select, #recaptcha_element {
+            margin-bottom: 15px;
+            padding: 8px;
+            font-size: 16px;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        button {
+            padding: 10px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>
+</head>
+<body>
+    <!-- Left Navigation Bar -->
+    <div class="left-nav">
+        <a href="dashboard.html" class="logo-link">
+            <img src="img/Synergy_transparent.png" alt="Synergy Logo" class="logo-img">
+        </a>
+        <button class="dropdown-btn">Bulletin</button>
+        <div class="dropdown-container">
+            <a href="addNewBulletIn.html">Add Bulletin</a>
+            <a href="bulletInList.html">Manage Bulletin</a>
+        </div>
+        <button class="dropdown-btn">Payment</button>
+        <div class="dropdown-container">
+            <a href="paymentList.html">Manage Payment</a>
+            <a href="addPayment.html">Add Payment</a>
+        </div>
+        <button class="dropdown-btn">Visitors</button>
+        <div class="dropdown-container">
+            <a href="visitorCheckInOut.html">Check Out Visitor</a>
+            <a href="visitorManagement.html">Visitor Management</a>
+            <a href="updateStatusVisitor.html">Update Status Visitor</a>
+        </div>
+        <button class="dropdown-btn">Facility</button>
+        <div class="dropdown-container">
+            <a href="addNewFacility.html">Add Facility</a>
+            <a href="facilityList.html">Manage Facility</a>
+        </div>
+        <button class="dropdown-btn">Complaint</button>
+        <div class="dropdown-container">
+            <a href="reportList.html">Manage Complaint</a>
+        </div>
+    </div>
+
+    <!-- Top Navigation Bar -->
+    <div class="top-nav">
+        <div class="website-name">Smart Resident Management System</div>
+        <div class="username">
+            <button id="usernameBtn">username</button>
+            <div class="dropdown" id="dropdownMenu">
+                <a href="myAccount.html">My Account</a>
+                <a href="loginForm.html">Log Out</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="left-side">
+            <!-- <header>
+                <img src="img/Synergy_transparent.png" alt="Synergy Logo" class="logo">
+            </header> -->
+            <div class="form-container">
+                <div class="fixed-header">
+                    <h2>Owner</h2>
+                    <p>Register a new owner with their unit details.</p>
+                </div>
+                <div class="scrollable-content">
+                    <form id="registerForm">
+                        <label for="full-name">Full Name</label>
+                        <input type="text" id="full-name" name="full-name" required>
+
+                        <label for="mobile-number">Mobile Number</label>
+                        <input type="tel" id="mobile-number" name="mobile-number" required>
+
+                        <label for="email-address">Email Address</label>
+                        <input type="email" id="email-address" name="email-address" required>
+
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required>
+
+                        <label for="retype-password">Re-type Password</label>
+                        <input type="password" id="retype-password" name="retype-password" required>
+
+                        <label for="dob">Date of Birth</label>
+                        <input type="date" id="dob" name="dob" required>
+
+                        <label for="gender">Gender</label>
+                        <select id="gender" name="gender" required>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+
+                        <label for="block">Block</label>
+                        <select id="block" name="block" required>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                        </select>
+
+                        <label for="floor">Floor</label>
+                        <select id="floor" name="floor" required></select>
+
+                        <label for="unit">Unit</label>
+                        <select id="unit" name="unit" required></select>
+
+                        <div id="recaptcha_element"></div><br>
+
+                        <button type="submit">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+        import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDUrwSd3rJvJKe0gOG5E0U68ow-fPGOLPA",
+            authDomain: "loginhtml-b6a38.firebaseapp.com",
+            databaseURL: "https://loginhtml-b6a38-default-rtdb.firebaseio.com",
+            projectId: "loginhtml-b6a38",
+            storageBucket: "loginhtml-b6a38.appspot.com",
+            messagingSenderId: "888243437180",
+            appId: "1:888243437180:web:5faad9d368f11ee6b1d3f9",
+            measurementId: "G-VXJT8PMFPF"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const auth = getAuth(app);
+
+        window.onload = function() {
+            grecaptcha.render('recaptcha_element', {
+                'sitekey': '6LelJxAqAAAAAGTKR6v_ukUrn15notyazUHoKGa6'  // Ensure this is your actual site key
+            });
+
+            populateDropdowns();
+        };
+
+        function populateDropdowns() {
+            const floorSelect = document.getElementById('floor');
+            const unitSelect = document.getElementById('unit');
+
+            // Populate floors from 13 to 25
+            for (let i = 13; i <= 25; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i;
+                floorSelect.appendChild(option);
+            }
+
+            // Populate units from 01 to 20
+            for (let i = 1; i <= 20; i++) {
+                const option = document.createElement('option');
+                option.value = i.toString().padStart(2, '0');
+                option.textContent = i.toString().padStart(2, '0');
+                unitSelect.appendChild(option);
+            }
+        }
+
+        document.getElementById("registerForm").addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const fullName = document.getElementById("full-name").value;
+            const mobileNumber = document.getElementById("mobile-number").value;
+            const emailAddress = document.getElementById("email-address").value;
+            const password = document.getElementById("password").value;
+            const retypePassword = document.getElementById("retype-password").value;
+            const dob = document.getElementById("dob").value;
+            const gender = document.getElementById("gender").value;
+            const block = document.getElementById("block").value;
+            const floor = document.getElementById("floor").value;
+            const unit = document.getElementById("unit").value;
+            const recaptchaResponse = grecaptcha.getResponse();
+
+            if (!fullName || !mobileNumber || !emailAddress || !password || !retypePassword || !dob || !gender || !block || !floor || !unit) {
+                alert("All fields must be filled out");
+                return false;
+            }
+
+            if (password !== retypePassword) {
+                alert("Passwords do not match");
+                return false;
+            }
+
+            var emailFormat = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailFormat.test(emailAddress)) {
+                alert("Invalid email format");
+                return false;
+                
+            }
+            // Validate phone number
+            const phonePattern = /^\d{10,11}$/;
+            if (!phonePattern.test(mobileNumber)) {
+                alert("Phone number must be 10 or 11 digits.");
+                return;
+            }
+
+
+            if (recaptchaResponse.length == 0) {
+                alert("Please complete the reCAPTCHA");
+                return;
+            }
+
+            try {
+                // Create user in Firebase Authentication
+                const userCredential = await createUserWithEmailAndPassword(auth, emailAddress, password);
+                const user = userCredential.user;
+                const ownerID = await generateOwnerID();
+                const newOwnerRef = ref(db, 'owners/' + ownerID);
+
+                const ownerData = {
+                    ownerID: ownerID,
+                    fullName: fullName,
+                    mobileNumber: mobileNumber,
+                    emailAddress: emailAddress,
+                    dob: dob,
+                    gender: gender,
+                    block: block,
+                    floor: floor,
+                    unit: unit,
+                    unitID: `${block}-${floor}-${unit}`,
+                    userUID: user.uid  // Store userUID from Firebase Authentication
+                };
+
+                set(newOwnerRef, ownerData)
+                    .then(() => {
+                        alert("Owner registered successfully");
+                    })
+                    .catch((error) => {
+                        alert("Error saving owner data: " + error);
+                    });
+            } catch (error) {
+                alert("Error creating user: " + error.message);
+            }
+        });
+
+        async function generateOwnerID() {
+            const ownersRef = ref(db, 'owners');
+            const snapshot = await get(ownersRef);
+            const owners = snapshot.val();
+            let newID = 1;
+
+            if (owners) {
+                const ownerIDs = Object.keys(owners);
+                const lastID = ownerIDs[ownerIDs.length - 1];
+                const numericID = parseInt(lastID.replace('O', ''));
+                newID = numericID + 1;
+            }
+
+            return 'O' + newID.toString().padStart(4, '0');
+        }
+    </script>
+</body>
+</html>

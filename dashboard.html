@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Resident Management System</title>
+    <link href="css/visitorMenu.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/nav.css">
+    <script src="js/script.js"></script>
+    <script src="js/sideNav.js"></script>
+    <script>
+
+    </script>
+    <style>
+        .main-content {
+            margin-left: 200px;
+            margin-top: 50px;
+            padding: 2em;
+            overflow-y: auto;
+            flex-grow: 1;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .box-container {
+            padding: 10px;
+            width: 300px;
+            height: 200px;
+            border: 1px solid #ccc;
+            display: flex;
+            align-items: center;
+            border-radius: 20px;
+            color: black;
+            background-color: bisque;
+        }
+
+        .box-container img {
+            width: 100px;
+            height: 100px;
+            border-radius: 5px;
+        }
+
+        .box-text {
+            padding: 10px;
+        }
+
+        .box-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .box-number {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        #tdyVisitors {
+            background-color: lightgreen;
+        }
+
+        #ytdVisitors {
+            background-color: lightcoral;
+        }
+        .box-container span{
+            font-size: 50px;
+        }
+
+        .chart-container {
+            grid-column: 1 / -1; /* Makes the chart span all columns */
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #f9f9f9; /* Optional background color */
+            border-radius: 20px; /* Optional styling */
+            border: 1px solid #ccc; /* Optional border */
+        }
+
+        .chart-container canvas {
+            width: 80% !important; /* Ensures the canvas takes full width */
+            height: auto !important; /* Maintains aspect ratio */
+        }
+        .website-name img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+
+        /* .blinking-stop {
+            animation: none;
+            background-color: red;
+        } */
+        /* Style when the box is active (blinking) */
+        @keyframes blink {
+            0% { background-color: red; }
+            50% { background-color: white; }
+            100% { background-color: red; }
+        }
+
+        .blinking {
+            animation: blink 3s infinite; /* Blinks indefinitely, with each cycle lasting 3 seconds */
+        }
+
+
+
+        </style>
+</head>
+<body>
+        <!-- Left Navigation Bar -->
+        <div class="left-nav">
+            <a href="dashboard.html" class="logo-link">
+                <img src="img/Synergy_transparent.png" alt="Synergy Logo" class="logo-img">
+            </a>
+            <button class="dropdown-btn">Bulletin</button>
+            <div class="dropdown-container">
+                <a href="addNewBulletIn.html">Add Bulletin</a>
+                <a href="bulletInList.html">Manage Bulletin</a>
+            </div>
+            <button class="dropdown-btn">Payment</button>
+            <div class="dropdown-container">
+                <a href="paymentList.html">Manage Payment</a>
+                <a href="addPayment.html">Add Payment</a>
+            </div>
+            <button class="dropdown-btn">Visitors</button>
+            <div class="dropdown-container">
+                <a href="visitorCheckInOut.html">Check Out Visitor</a>
+                <a href="visitorManagement.html">Visitor Management</a>
+                <a href="updateStatusVisitor.html">Update Status Visitor</a>
+            </div>
+            <button class="dropdown-btn">Facility</button>
+            <div class="dropdown-container">
+                <a href="addNewFacility.html">Add Facility</a>
+                <a href="facilityList.html">Manage Facility</a>
+            </div>
+            <button class="dropdown-btn">Complaint</button>
+            <div class="dropdown-container">
+                <a href="reportList.html">Manage Complaint</a>
+            </div>
+        </div>
+
+    <!-- Top Navigation Bar -->
+    <div class="top-nav">
+        <div class="website-name">Smart Resident Management System</div>
+
+        <div class="username">
+            <button id="usernameBtn">username</button>
+            <div class="dropdown" id="dropdownMenu">
+                <a href="myAccount.html">My Account</a>
+                <a href="loginForm.html">Log Out</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <!-- Line Chart Container -->
+        <div class="chart-container">
+            <h2>Visitors Line Graph</h2>
+            <canvas id="lineChart"></canvas>
+        </div>
+
+        <!-- Box Container 1 -->
+        <div class="box-container" id="tdyVisitors" onclick="redirectTo('visitorManagement.html')">
+            <img src="img/Visitor-Profile-User-Transparent.png" alt="Placeholder Image">
+            <div class="box-text">
+                <div class="box-title">Total Visitor</div>
+                <span class="box-number box-number1">0</span>
+            </div>
+        </div>
+
+        <!-- Box Container 2 -->
+        <div class="box-container" id="totalBulletins" onclick="redirectTo('updateStatusVisitor.html')">
+            <img src="img/Visitor-Profile-User-Transparent.png" alt="Placeholder Image">
+            <div class="box-text">
+                <div class="box-title">Total Visitor Pending</div>
+                <span class="box-number box-number2">0</span>
+            </div>
+        </div>
+
+        <!-- Box Container 3 -->
+        <div class="box-container" id="totalPayments" onclick="redirectTo('paymentList.html')">
+            <img src="img/Visitor-Profile-User-Transparent.png" alt="Placeholder Image">
+            <div class="box-text">
+                <div class="box-title">Total Payment Made</div>
+                <span class="box-number box-number3">0</span>
+            </div>
+        </div>
+
+        <!-- Box Container 4 -->
+        <div class="box-container" id="totalFacilities" onclick="redirectTo('reportList.html')">
+            <img src="img/Visitor-Profile-User-Transparent.png" alt="Placeholder Image">
+            <div class="box-text">
+                <div class="box-title">Total Complaint Pending</div>
+                <span class="box-number box-number4">0</span>
+            </div>
+        </div>
+
+        <!-- Box Container 5 -->
+        <div class="box-container" id="checkInVisitors" onclick="redirectTo('visitorCheckInOut.html')">
+            <img src="img/Visitor-Profile-User-Transparent.png" alt="Placeholder Image">
+            <div class="box-text">
+                <div class="box-title">Checked-In Visitors</div>
+                <span class="box-number box-number5">0</span>
+            </div>
+        </div>
+
+        <!-- Box Container 6 -->
+        <div class="box-container" id="checkOutVisitors" onclick="redirectTo('visitorCheckInOut.html')">
+            <img src="img/Visitor-Profile-User-Transparent.png" alt="Placeholder Image">
+            <div class="box-text">
+                <div class="box-title">Checked-Out Visitors</div>
+                <span class="box-number box-number6">0</span>
+            </div>
+        </div>
+
+        
+    </div>
+
+    <script>
+        // JavaScript for dropdown menu in the left nav
+        var dropdowns = document.getElementsByClassName("dropdown-btn");
+        for (var i = 0; i < dropdowns.length; i++) {
+            dropdowns[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                var dropdownContent = this.nextElementSibling;
+                dropdownContent.classList.toggle("show");
+                if (dropdownContent.style.display === "block") {
+                    dropdownContent.style.display = "none";
+                } else {
+                    dropdownContent.style.display = "block";
+                }
+            });
+        }
+
+        function redirectTo(url) {
+            window.location.href = url;
+        }
+
+    </script>
+    <!-- Include Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDUrwSd3rJvJKe0gOG5E0U68ow-fPGOLPA",
+            authDomain: "loginhtml-b6a38.firebaseapp.com",
+            databaseURL: "https://loginhtml-b6a38-default-rtdb.firebaseio.com",
+            projectId: "loginhtml-b6a38",
+            storageBucket: "loginhtml-b6a38.appspot.com",
+            messagingSenderId: "888243437180",
+            appId: "1:888243437180:web:5faad9d368f11ee6b1d3f9",
+            measurementId: "G-VXJT8PMFPF"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Update statistics
+            updateVisitorStatistics();
+            updateBulletinStatistics();
+            updatePaymentStatistics();
+            updateFacilityStatistics();
+            updateCheckInStatistics();
+            updateCheckOutStatistics();
+        });
+
+        // Function to update visitor statistics
+        async function updateVisitorStatistics() {
+            try {
+                const dbRef = ref(db, 'visitors');
+                const snapshot = await get(dbRef);
+
+                if (snapshot.exists()) {
+                    const visitors = snapshot.val();
+                    const totalCount = Object.keys(visitors).length;
+
+                    document.querySelector('.box-number1').textContent = totalCount;
+                } else {
+                    console.log("No visitor data found.");
+                }
+            } catch (error) {
+                console.error("Error fetching visitor data:", error);
+            }
+        }
+
+        // Function to update visitor statistics based on pending status
+        async function updateBulletinStatistics() {
+            try {
+                const dbRef = ref(db, 'visitors');
+                const snapshot = await get(dbRef);
+
+                if (snapshot.exists()) {
+                    const visitors = snapshot.val();
+                    let pendingCount = 0;
+
+                    for (const visitorID in visitors) {
+                        if (visitors[visitorID].status === "pending") {
+                            pendingCount++;
+                        }
+                    }
+
+                    document.querySelector('.box-number2').textContent = pendingCount;
+
+                    const boxContainer = document.getElementById('totalBulletins');
+
+                    if (pendingCount > 0) {
+                        // Add blinking class
+                        boxContainer.classList.add('blinking');
+
+                        // Stop blinking after 3 seconds and continue infinite blink
+                        setInterval(() => {
+                            boxContainer.classList.remove('blinking');
+                            boxContainer.classList.add('blinking-stop');
+                            setTimeout(() => {
+                                boxContainer.classList.remove('blinking-stop');
+                                boxContainer.classList.add('blinking');
+                            }, 3000);
+                        }, 6000);
+                    } else {
+                        // If no pending visitors, ensure the box is white
+                        boxContainer.classList.remove('blinking', 'blinking-stop');
+                    }
+                } else {
+                    console.log("No visitor data found.");
+                }
+            } catch (error) {
+                console.error("Error fetching visitor data:", error);
+            }
+        }
+
+
+        // Function to update payment statistics
+        async function updatePaymentStatistics() {
+            try {
+                const dbRef = ref(db, 'payments');
+                const snapshot = await get(dbRef);
+
+                if (snapshot.exists()) {
+                    const payments = snapshot.val();
+                    const totalCount = Object.keys(payments).length;
+
+                    document.querySelector('.box-number3').textContent = totalCount;
+                } else {
+                    console.log("No payment data found.");
+                }
+            } catch (error) {
+                console.error("Error fetching payment data:", error);
+            }
+        }
+
+        // Function to update facility statistics
+        async function updateFacilityStatistics() {
+            try {
+                const dbRef = ref(db, 'reports');
+                const snapshot = await get(dbRef);
+
+                if (snapshot.exists()) {
+                    const reports = snapshot.val();
+                    let pendingCount = 0;
+
+                    for (const reportID in reports) {
+                        if (reports[reportID].status === "pending") {
+                            pendingCount++;
+                        }
+                    }
+
+                    const boxNumberElement = document.querySelector('.box-number4');
+                    boxNumberElement.textContent = pendingCount;
+
+                    const boxContainer = document.getElementById('totalFacilities');
+
+                    if (pendingCount > 0) {
+                        // Add blinking class for infinite blinking
+                        boxContainer.classList.add('blinking');
+                    } else {
+                        // Remove blinking class if no pending complaints
+                        boxContainer.classList.remove('blinking');
+                        boxContainer.style.backgroundColor = 'red';
+                    }
+                } else {
+                    console.log("No report data found.");
+                }
+            } catch (error) {
+                console.error("Error fetching report data:", error);
+            }
+        }
+
+
+
+        // Function to update check-in statistics
+        async function updateCheckInStatistics() {
+            try {
+                const dbRef = ref(db, 'visitors');
+                const snapshot = await get(dbRef);
+
+                if (snapshot.exists()) {
+                    const visitors = snapshot.val();
+                    let checkInCount = 0;
+
+                    for (const visitor of Object.values(visitors)) {
+                        if (visitor.checkInTime) {
+                            checkInCount++;
+                        }
+                    }
+
+                    document.querySelector('.box-number5').textContent = checkInCount;
+                } else {
+                    console.log("No visitor data found.");
+                }
+            } catch (error) {
+                console.error("Error fetching visitor data:", error);
+            }
+        }
+
+        // Function to update check-out statistics
+        async function updateCheckOutStatistics() {
+            try {
+                const dbRef = ref(db, 'visitors');
+                const snapshot = await get(dbRef);
+
+                if (snapshot.exists()) {
+                    const visitors = snapshot.val();
+                    let checkOutCount = 0;
+
+                    for (const visitor of Object.values(visitors)) {
+                        if (visitor.checkOutTime) {
+                            checkOutCount++;
+                        }
+                    }
+
+                    document.querySelector('.box-number6').textContent = checkOutCount;
+                } else {
+                    console.log("No visitor data found.");
+                }
+            } catch (error) {
+                console.error("Error fetching visitor data:", error);
+            }
+        }
+        
+// Function to fetch data from Firebase
+async function fetchData() {
+    const visitorsRef = ref(db, 'visitors');
+    const snapshot = await get(visitorsRef);
+    const visitors = snapshot.val();
+    const hourCounts = Array(24).fill(0); // Initialize array for 24 hours
+
+    const currentDate = new Date();
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setMonth(currentDate.getMonth() - 1);
+
+    for (let key in visitors) {
+        const visitDateStr = visitors[key].visitDate;
+        const checkInTime = visitors[key].checkInTime;
+
+        if (visitDateStr && checkInTime) {
+            const visitDate = convertToDate(visitDateStr);
+
+            if (visitDate >= oneMonthAgo && visitDate <= currentDate) {
+                const hour = convertTo24HourFormat(checkInTime);
+                hourCounts[hour]++;
+            }
+        }
+    }
+
+    return hourCounts;
+}
+function convertToDate(dateString) {
+    const [day, month, year] = dateString.split('/');
+    return new Date(`${year}-${month}-${day}`);
+}
+
+    // Function to convert 12-hour format to 24-hour format
+    function convertTo24HourFormat(time) {
+        const [timePart, modifier] = time.split(' ');
+        let [hours, minutes] = timePart.split(':');
+        hours = parseInt(hours, 10);
+        if (modifier === 'PM' && hours !== 12) {
+            hours += 12;
+        } else if (modifier === 'AM' && hours === 12) {
+            hours = 0;
+        }
+        return hours;
+    }
+
+    // Get canvas element
+    const ctx = document.getElementById('lineChart').getContext('2d');
+
+    // Create initial empty line chart
+    let lineChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: Array.from({ length: 24 }, (_, i) => `${i}:00`), // Labels for 24 hours
+            datasets: [{
+                label: 'Number of Check-Ins',
+                data: [],
+                borderColor: 'blue',
+                backgroundColor: 'rgba(0, 0, 255, 0.1)',
+                tension: 0.3
+            }]
+        },
+        options: {
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Hour'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Number of Check-Ins'
+                    },
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Function to update chart
+    async function updateChart() {
+        const hourCounts = await fetchData();
+        lineChart.data.datasets[0].data = hourCounts;
+        lineChart.update();
+    }
+
+    // Load initial chart data
+    document.addEventListener('DOMContentLoaded', () => {
+        updateChart();
+    });
+
+         
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/visitorManagement.css">
+    <link rel="stylesheet" href="css/nav.css">
+    <script type="module" src="../js/sideNav.js"></script>
+    <script type="module" src="js/script.js"></script>
+    <title>Smart Resident Management System - Bulletin Details</title>
+    <style>
+        /* Styles for the Bulletin Details page */
+        .main-content {
+            padding: 20px;
+            margin-left: 350px;
+            margin-right:150px;
+            /* width:300px; */
+            margin-top: 70px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow: auto;
+        }
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .main-content::-webkit-scrollbar {
+            display: none;
+        }
+
+        .bulletin-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            padding: 10px;
+            background-color: #f4f4f4;
+            border-radius: 10px;
+        }
+
+        .bulletin-actions {
+            display: flex;
+            justify-content: space-between; /* This will move the items to the edges of the container */
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 0 20px; /* Optional: add some padding to the container */
+        }
+
+        .bulletin-actions img {
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            border-radius: 20px;
+        }
+
+
+        .bulletin-details {
+            margin-bottom: 20px;
+            margin-left: 25%;
+            margin-right: 25%;
+        }
+
+        .bulletin-details .row {
+            margin-bottom: 10px;
+        }
+
+        .attachments img {
+            max-width: 100%;
+            height: auto;
+            margin-top: 10px;
+        }
+
+        .hardcoded-content {
+            margin-top: 20px;
+            font-style: italic;
+            /* text-align: left; */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Left Navigation Bar -->
+    <div class="left-nav">
+        <a href="dashboard.html" class="logo-link">
+            <img src="img/Synergy_transparent.png" alt="Synergy Logo" class="logo-img">
+        </a>
+        <button class="dropdown-btn">Bulletin</button>
+        <div class="dropdown-container">
+            <a href="addNewBulletIn.html">Add Bulletin</a>
+            <a href="bulletInList.html">Manage Bulletin</a>
+        </div>
+        <button class="dropdown-btn">Payment</button>
+        <div class="dropdown-container">
+            <a href="paymentList.html">Manage Payment</a>
+            <a href="addPayment.html">Add Payment</a>
+        </div>
+        <button class="dropdown-btn">Visitors</button>
+        <div class="dropdown-container">
+            <a href="visitorCheckInOut.html">Check Out Visitor</a>
+            <a href="visitorManagement.html">Visitor Management</a>
+            <a href="updateStatusVisitor.html">Update Status Visitor</a>
+        </div>
+        <button class="dropdown-btn">Facility</button>
+        <div class="dropdown-container">
+            <a href="addNewFacility.html">Add Facility</a>
+            <a href="facilityList.html">Manage Facility</a>
+        </div>
+        <button class="dropdown-btn">Complaint</button>
+        <div class="dropdown-container">
+            <a href="reportList.html">Manage Complaint</a>
+        </div>
+    </div>
+
+    <!-- Top Navigation Bar -->
+    <div class="top-nav">
+        <div class="website-name">Smart Resident Management System</div>
+        <div class="username">
+            <button id="usernameBtn">username</button>
+            <div class="unit-id" id="unitIDDisplay"></div>
+            <div class="dropdown" id="dropdownMenu">
+                <a href="myAccount.html">My Account</a>
+                <a href="ownerLogin.html">Log Out</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area for Bulletin Details -->
+    <div class="main-content">
+        <div id="bulletinTitle" class="bulletin-title"></div>
+        
+        <div class="bulletin-actions">
+            <img id="returnBtn" src="../img/undo.png" alt="Return">
+            <img id="printPdfBtn" src="../img/print.png" alt="Print PDF">
+        </div>
+
+        <div class="bulletin-details">
+            <h2>Bulletin Details</h2>
+            <div class="row">
+                <span id="bulletinDate"></span><br/><br/>
+            </div>
+            <div class="hardcoded-content">
+                <p>To: All Owners & Resident</p><br>
+            </div>
+
+            <div class="row">
+                <strong>Message Body:</strong>
+                <p id="bulletinMessageBody"></p>
+            </div>
+            <div class="row">
+                <strong>Remarks:</strong>
+                <p id="bulletinRemarks"></p><br><br>
+            </div>
+            
+            <div class="hardcoded-content">
+                <p>For any other enquiries please visit:</p>
+                <strong><p>Synergy Management Aid Unit</p>
+                <p>Management Team</p></strong>
+                <p>Tel: 03-41450123 (Ext. 3343)</p>
+                <p>Email: synergy_mgmt@gmail.com</p>
+                <p>Thank you.</p><br>
+            </div>
+
+            <div class="row attachments">
+                <strong>Attachments:</strong>
+                <div id="bulletinAttachments"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
+        import { getStorage, ref as storageRef, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-storage.js";
+
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDUrwSd3rJvJKe0gOG5E0U68ow-fPGOLPA",
+            authDomain: "loginhtml-b6a38.firebaseapp.com",
+            databaseURL: "https://loginhtml-b6a38-default-rtdb.firebaseio.com",
+            projectId: "loginhtml-b6a38",
+            storageBucket: "loginhtml-b6a38.appspot.com",
+            messagingSenderId: "888243437180",
+            appId: "1:888243437180:web:5faad9d368f11ee6b1d3f9",
+            measurementId: "G-VXJT8PMFPF"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const storage = getStorage(app);
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            const bulletID = localStorage.getItem('bulletID');
+            
+            if (!bulletID) {
+                alert('No bulletin selected');
+                window.location.href = 'bulletInList.html';
+                return;
+            }
+
+            const bulletinRef = ref(db, `bulletins/${bulletID}`);
+            const snapshot = await get(bulletinRef);
+            const bulletin = snapshot.val();
+
+            if (!bulletin) {
+                alert('Bulletin not found');
+                window.location.href = 'bulletInList.html';
+                return;
+            }
+
+            document.getElementById('bulletinTitle').innerText = bulletin.title;
+            // const date = new Date(bulletin.date);
+            // const formattedDate = `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
+            document.getElementById('bulletinDate').innerText = bulletin.date;
+            document.getElementById('bulletinMessageBody').innerHTML = bulletin.messageBody;
+            document.getElementById('bulletinRemarks').innerText = bulletin.remarks;
+
+            const attachmentsDiv = document.getElementById('bulletinAttachments');
+            // const filePath = 'bulletIn/elevator.jpg'; // Hardcoded file path
+            const filePath = bulletin.attachments;
+            const attachmentRef = storageRef(storage, filePath);
+
+            try {
+                const attachmentURL = await getDownloadURL(attachmentRef);
+                const imgContainer = document.createElement('div');
+                imgContainer.classList.add('facility-img-container');
+
+                const img = document.createElement('img');
+                img.src = attachmentURL;
+                img.alt = "Bulletin Attachment";
+
+                imgContainer.appendChild(img);
+                attachmentsDiv.appendChild(imgContainer);
+            } catch (error) {
+                console.error('Error getting download URL:', error);
+                attachmentsDiv.innerHTML = 'No attachments available';
+            }
+
+            document.getElementById('returnBtn').addEventListener('click', () => {
+                window.location.href = 'dashboard.html';
+            });
+
+            document.getElementById('printPdfBtn').addEventListener('click', () => {
+                window.print();
+            });
+        });
+
+
+    </script>
+</body>
+</html>

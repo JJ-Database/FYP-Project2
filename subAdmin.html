@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sub Admin Registration - Smart Resident Management System</title>
+    <link rel="stylesheet" href="css/nav.css">
+    <script src="js/script.js"></script>
+    <script type="module" src="js/sideNav.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+            background-color: white;
+            color: black;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+            margin-top: 50px;
+        }
+
+        .left-side {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            height: 70px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 10px;
+            width: 100%;
+            background-color: white;
+            color: black;
+        }
+
+        .form-container {
+            padding-top: 20px;
+            padding-bottom: 50px;
+            padding-left: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            width: 100%;
+            max-width: 700px;
+            margin: 0px 80px;
+            overflow: hidden;
+            flex-grow: 1;
+        }
+
+        .fixed-header {
+            position: sticky;
+            top: 0;
+            background-color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        .scrollable-content {
+            overflow-y: auto;
+            max-height: calc(100vh - 200px);
+            padding-left: 10%;
+            background-color: #f7f3e9;
+            padding-top: 30px;
+            padding-bottom: 30px;
+        }
+
+        .scrollable-content::-webkit-scrollbar {
+            display: none;
+        }
+
+        h2 {
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 5px;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        input, select, #recaptcha_element {
+            margin-bottom: 15px;
+            padding: 8px;
+            font-size: 16px;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        button {
+            padding: 10px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>
+</head>
+<body>
+    <!-- Left Navigation Bar -->
+    <div class="left-nav">
+        <a href="dashboard.html" class="logo-link">
+            <img src="img/Synergy_transparent.png" alt="Synergy Logo" class="logo-img">
+        </a>
+        <button class="dropdown-btn">Bulletin</button>
+        <div class="dropdown-container">
+            <a href="addNewBulletIn.html">Add Bulletin</a>
+            <a href="bulletInList.html">Manage Bulletin</a>
+        </div>
+        <button class="dropdown-btn">Payment</button>
+        <div class="dropdown-container">
+            <a href="paymentList.html">Manage Payment</a>
+            <a href="addPayment.html">Add Payment</a>
+        </div>
+        <button class="dropdown-btn">Visitors</button>
+        <div class="dropdown-container">
+            <a href="visitorCheckInOut.html">Check Out Visitor</a>
+            <a href="visitorManagement.html">Visitor Management</a>
+            <a href="updateStatusVisitor.html">Update Status Visitor</a>
+        </div>
+        <button class="dropdown-btn">Facility</button>
+        <div class="dropdown-container">
+            <a href="addNewFacility.html">Add Facility</a>
+            <a href="facilityList.html">Manage Facility</a>
+        </div>
+        <button class="dropdown-btn">Complaint</button>
+        <div class="dropdown-container">
+            <a href="reportList.html">Manage Complaint</a>
+        </div>
+    </div>
+
+    <!-- Top Navigation Bar -->
+    <div class="top-nav">
+        <div class="website-name">Smart Resident Management System</div>
+        <div class="username">
+            <button id="usernameBtn">username</button>
+            <div class="dropdown" id="dropdownMenu">
+                <a href="myAccount.html">My Account</a>
+                <a href="loginForm.html">Log Out</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="left-side">
+            <div class="form-container">
+                <div class="fixed-header">
+                    <h2>Sub-Admin</h2>
+                    <p>The admin allows another person to have admin access.</p>
+                </div>
+                <div class="scrollable-content">
+                    <form id="registerForm">
+                        <label for="full-name">Full Name</label>
+                        <input type="text" id="full-name" name="full-name" required>
+
+                        <label for="mobile-number">Mobile Number</label>
+                        <input type="tel" id="mobile-number" name="mobile-number" required>
+
+                        <label for="email-address">Email Address</label>
+                        <input type="email" id="email-address" name="email-address" required>
+
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required>
+
+                        <label for="retype-password">Re-type Password</label>
+                        <input type="password" id="retype-password" name="retype-password" required>
+
+                        <label for="dob">Date of Birth</label>
+                        <input type="date" id="dob" name="dob" required>
+
+                        <label for="gender">Gender</label>
+                        <select id="gender" name="gender" required>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+
+                        <div id="recaptcha_element"></div><br>
+
+                        <button type="submit">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+        import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
+        import { getAuth, createUserWithEmailAndPassword, fetchSignInMethodsForEmail } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-auth.js";
+    
+        const firebaseConfig = {
+            apiKey: "AIzaSyDUrwSd3rJvJKe0gOG5E0U68ow-fPGOLPA",
+            authDomain: "loginhtml-b6a38.firebaseapp.com",
+            databaseURL: "https://loginhtml-b6a38-default-rtdb.firebaseio.com",
+            projectId: "loginhtml-b6a38",
+            storageBucket: "loginhtml-b6a38.appspot.com",
+            messagingSenderId: "888243437180",
+            appId: "1:888243437180:web:5faad9d368f11ee6b1d3f9",
+            measurementId: "G-VXJT8PMFPF"
+        };
+    
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const auth = getAuth(app);
+    
+        function generateUniqueUserId() {
+            return new Promise((resolve, reject) => {
+                const dbRef = ref(db);
+                get(child(dbRef, `users`)).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        const userData = snapshot.val();
+                        const userIds = Object.keys(userData);
+                        let maxId = 0;
+                        userIds.forEach(id => {
+                            const num = parseInt(id.replace('U', ''), 10);
+                            if (!isNaN(num) && num > maxId) {
+                                maxId = num;
+                            }
+                        });
+                        const newId = `U${String(maxId + 1).padStart(4, '0')}`;
+                        resolve(newId);
+                    } else {
+                        resolve('U0001');
+                    }
+                }).catch((error) => {
+                    reject(error);
+                });
+            });
+        }
+    
+        window.onload = function() {
+            grecaptcha.render('recaptcha_element', {
+                'sitekey': '6LelJxAqAAAAAGTKR6v_ukUrn15notyazUHoKGa6'  // Ensure this is your actual site key
+            });
+        };
+    
+        document.getElementById("registerForm").addEventListener('submit', async function(e) {
+            e.preventDefault();
+    
+            const fullName = document.getElementById("full-name").value;
+            const mobileNumber = document.getElementById("mobile-number").value;
+            const emailAddress = document.getElementById("email-address").value;
+            const password = document.getElementById("password").value;
+            const retypePassword = document.getElementById("retype-password").value;
+            const dob = document.getElementById("dob").value;
+            const gender = document.getElementById("gender").value;
+    
+            if (password !== retypePassword) {
+                alert("Passwords do not match.");
+                return;
+            }
+
+            // Validate phone number
+            const phonePattern = /^\d{10,11}$/;
+            if (!phonePattern.test(mobileNumber)) {
+                alert("Phone number must be 10 or 11 digits.");
+                return;
+            }
+
+            if (password !== retypePassword) {
+                alert("Passwords do not match");
+                return false;
+            }
+
+            var emailFormat = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailFormat.test(emailAddress)) {
+                alert("Invalid email format");
+                return false;
+            }
+
+    
+            try {
+                // Check if email is already in use
+                const signInMethods = await fetchSignInMethodsForEmail(auth, emailAddress);
+                if (signInMethods.length > 0) {
+                    alert("Email address is already in use. Please use a different email address.");
+                    return;
+                }
+    
+                // Create the new user
+                const userCredential = await createUserWithEmailAndPassword(auth, emailAddress, password);
+                const user = userCredential.user;
+                const userId = user.uid;
+    
+                // Generate unique user ID and save to database
+                const uniqueUserId = await generateUniqueUserId();
+                await set(ref(db, 'users/' + uniqueUserId), {
+                    fullName: fullName,
+                    mobileNumber: mobileNumber,
+                    emailAddress: emailAddress,
+                    dob: dob,
+                    userID:uniqueUserId,
+                    gender: gender,
+                    userUID: userId
+                });
+    
+                alert("Sub-admin account created successfully.");
+                document.getElementById("registerForm").reset();
+            } catch (error) {
+                alert("Error creating sub-admin account:", error);
+                alert("Please check password length more than 6. Email may in use.");
+            }
+        });
+    </script>
+    
+</body>
+</html>

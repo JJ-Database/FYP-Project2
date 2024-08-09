@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tinymce/5.10.3/tinymce.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/5.10.3/tinymce.min.js"></script>
+    <script type="module" src="js/script.js"></script>
+    <script type="module" src="js/sideNav.js"></script>
+    <link rel="stylesheet" href="css/nav.css">
+    <link rel="stylesheet" href="css/addNewBulletIn.css">
+    <title>Add Bulletin - Smart Resident Management System</title>
+    <style>
+            .form-container {
+                margin-bottom: 100px;
+            }
+    </style>
+</head>
+<body>
+    <!-- Left Navigation Bar -->
+    <div class="left-nav">
+        <a href="dashboard.html" class="logo-link">
+            <img src="img/Synergy_transparent.png" alt="Synergy Logo" class="logo-img">
+        </a>
+        <button class="dropdown-btn">Bulletin</button>
+        <div class="dropdown-container">
+            <a href="addNewBulletIn.html">Add Bulletin</a>
+            <a href="bulletInList.html">Manage Bulletin</a>
+        </div>
+        <button class="dropdown-btn">Payment</button>
+        <div class="dropdown-container">
+            <a href="paymentList.html">Manage Payment</a>
+            <a href="addNewPayment.html">Payment</a>
+        </div>
+        <button class="dropdown-btn">Visitors</button>
+        <div class="dropdown-container">
+            <a href="visitorCheckInOut.html">Check Out Visitor</a>
+            <a href="visitorManagement.html">Visitor Management</a>
+        </div>
+        <button class="dropdown-btn">Facility</button>
+        <div class="dropdown-container">
+            <a href="addNewFacility.html">Add Facility</a>
+            <a href="facilityList.html">Manage Facility</a>
+        </div>
+        <button class="dropdown-btn">Reports</button>
+        <div class="dropdown-container">
+            <a href="addNewReport.html">Add Report</a>
+            <a href="reportList.html">Manage Report</a>
+        </div>
+        <a href="#">Settings</a>
+    </div>
+
+    <!-- Top Navigation Bar -->
+    <div class="top-nav">
+        <div class="website-name">Smart Resident Management System</div>
+        <div class="username">
+            <button id="usernameBtn">username</button>
+            <div class="dropdown" id="dropdownMenu">
+                <a href="myAccount.html">My Account</a>
+                <a href="loginForm.html">Log Out</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <h1 class="txtWelcome">Add New Bulletin</h1>
+
+        <div class="form-container" id="bulletinFormContainer">
+            <form id="addBulletinForm">
+                <label for="category">Category</label>
+                <select id="category" name="category" required>
+                    <option value="">Select Category</option>
+                    <!-- <option value="announcement">Announcement</option> -->
+                </select>
+
+                <label for="title">Title</label>
+                <input type="text" id="title" name="title" placeholder="Bulletin title.." required>
+
+                <label for="remarks">Remarks</label>
+                <input type="text" id="remarks" name="remarks" placeholder="Any remarks..">
+
+                <label for="date">Date</label>
+                <input type="text" id="date" name="date" placeholder="dd/mm/yyyy" required readonly>
+
+                <label for="messageBody">Message Body</label>
+                <textarea id="messageBody" name="messageBody"></textarea>
+
+                <label for="attachment">Attachment</label>
+                <input type="file" id="attachment" name="attachment" accept="image/*">
+                <img id="imagePreview" src="" alt="Image Preview" style="display:none; max-width: 300px; margin-top: 10px;">
+
+                <div>
+                    <button type="submit">Save Changes</button>
+                </div>
+            </form>
+        </div>
+        <!-- <div class="success-message" id="successMessage">Bulletin added successfully!</div> -->
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+        import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
+        import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-storage.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyDUrwSd3rJvJKe0gOG5E0U68ow-fPGOLPA",
+            authDomain: "loginhtml-b6a38.firebaseapp.com",
+            databaseURL: "https://loginhtml-b6a38-default-rtdb.firebaseio.com",
+            projectId: "loginhtml-b6a38",
+            storageBucket: "loginhtml-b6a38.appspot.com",
+            messagingSenderId: "888243437180",
+            appId: "1:888243437180:web:5faad9d368f11ee6b1d3f9",
+            measurementId: "G-VXJT8PMFPF"
+        };
+        
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const storage = getStorage(app);
+        
+        tinymce.init({
+            selector: '#messageBody',
+            plugins: 'advlist autolink lists link image charmap print preview hr anchor pagebreak',
+            toolbar_mode: 'floating',
+        });
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                // Set current date in the date field
+                const today = new Date();
+                const day = String(today.getDate()).padStart(2, '0');
+                const month = String(today.getMonth() + 1).padStart(2, '0');
+                const year = today.getFullYear();
+                const formattedDate = `${day}/${month}/${year}`;
+                document.getElementById('date').value = formattedDate;
+        
+                // Fetch bulletin categories from Firebase
+                const categoriesRef = ref(db, 'settings/bulletinCategory');
+                const snapshot = await get(categoriesRef);
+                const categories = snapshot.val();
+        
+                console.log('Categories:', categories);
+                alert('Categories fetched successfully');
+        
+                // Populate the dropdown menu with categories
+                const categoryDropdown = document.getElementById('category');
+                if (categories) {
+                    for (const category in categories) {
+                        const option = document.createElement('option');
+                        option.value = category;
+                        option.textContent = categories[category];
+                        categoryDropdown.appendChild(option);
+                    }
+                } else {
+                    alert('No categories found');
+                }
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+                alert('Error fetching categories: ' + error.message);
+            }
+        });
+        
+        document.getElementById('attachment').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('imagePreview').src = e.target.result;
+                    document.getElementById('imagePreview').style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        document.getElementById('addBulletinForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            alert('Form submitted');
+            console.log('Form submitted');
+        
+            const form = event.target;
+            const fileInput = document.getElementById('attachment');
+            const file = fileInput.files[0];
+            const categoryDropdown = document.getElementById('category');
+            const categoryName = categoryDropdown.options[categoryDropdown.selectedIndex]?.text || "";
+            const userID = localStorage.getItem('userID') || "defaultUserID";
+            const dateValue = form.date.value;
+        
+            console.log('Selected Category:', categoryName);
+            console.log('UserID:', userID);
+            console.log('Date:', dateValue);
+        
+            if (!userID) {
+                alert('UserID is missing in local storage');
+                return;
+            }
+        
+            try {
+                const bulletinsRef = ref(db, 'bulletins/');
+                const bulletinsSnapshot = await get(bulletinsRef);
+                const bulletins = bulletinsSnapshot.val() || {};
+        
+                let newBulletID;
+                let highestID = 0;
+    
+                // Find the highest existing ID
+                for (const id in bulletins) {
+                    const numericID = parseInt(id.substring(1), 10);
+                    if (numericID > highestID) {
+                        highestID = numericID;
+                    }
+                }
+    
+                newBulletID = 'B' + String(highestID + 1).padStart(4, '0');
+    
+                console.log('New Bullet ID:', newBulletID);
+                alert('New Bullet ID: ' + newBulletID);
+        
+                let attachmentUrl = '';
+        
+                if (file) {
+                    const storagePath = `bulletIn/${file.name}`;
+                    const fileRef = storageRef(storage, storagePath);
+                    await uploadBytes(fileRef, file);
+                    attachmentUrl = await getDownloadURL(fileRef);
+                    console.log('File uploaded successfully:', attachmentUrl);
+                }
+        
+                const newBulletinData = {
+                    bulletID: newBulletID,
+                    userID: userID,
+                    category: categoryName,
+                    title: form.title.value,
+                    remarks: form.remarks.value,
+                    messageBody: tinymce.get('messageBody').getContent(),
+                    date: dateValue,
+                    attachments: file ? `bulletIn/${file.name}` : '' // Use the attachment URL or empty string
+                };
+        
+                console.log('New Bulletin Data:', newBulletinData);
+                alert('New Bulletin Data: ' + JSON.stringify(newBulletinData));
+        
+                await set(ref(db, 'bulletins/' + newBulletID), newBulletinData);
+        
+                // Ensure successMessage element exists
+                const successMessage = document.getElementById('successMessage');
+                if (successMessage) {
+                    successMessage.style.display = 'block';
+                }
+        
+                form.reset();
+                tinymce.get('messageBody').setContent('');
+                document.getElementById('imagePreview').style.display = 'none';
+                alert('Bulletin added successfully!');
+            } catch (error) {
+                console.error('Error adding bulletin:', error);
+                alert('Error adding bulletin: ' + error.message);
+            }
+        });
+    </script>
+    
+    
+</body>
+</html>

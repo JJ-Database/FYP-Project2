@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Resident Management System</title>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+    <script src="js/script.js"></script>
+    <script type="module" src="js/sideNav.js"></script>
+    <link rel="stylesheet" href="css/nav.css">
+    <style>
+        .main-content {
+            margin-left: 200px;
+            margin-top: 50px;
+            padding: 2em;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        .txtWelcome {
+            text-decoration: underline;
+        }
+
+        .form-container {
+            margin: 5px;
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            height: auto;
+            padding-bottom: 50px;
+        }
+
+        .form-container input,
+        .form-container select {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .form-container button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            float: left;
+            margin-right: 10px;
+        }
+
+        .form-container button:hover {
+            background-color: #45a049;
+        }
+
+        .form-container .cancelbtn {
+            background-color: #f44336;
+        }
+
+        .form-container .cancelbtn:hover {
+            background-color: #da190b;
+        }
+
+        .img-preview {
+            width: 400px;
+            height: auto;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .img-preview-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Left Navigation Bar -->
+    <div class="left-nav">
+        <a href="dashboard.html" class="logo-link">
+            <img src="img/Synergy_transparent.png" alt="Synergy Logo" class="logo-img">
+        </a>
+        <button class="dropdown-btn">Bulletin</button>
+        <div class="dropdown-container">
+            <a href="addNewBulletIn.html">Add Bulletin</a>
+            <a href="bulletInList.html">Manage Bulletin</a>
+        </div>
+        <button class="dropdown-btn">Payment</button>
+        <div class="dropdown-container">
+            <a href="paymentList.html">Manage Payment</a>
+            <a href="addPayment.html">Add Payment</a>
+        </div>
+        <button class="dropdown-btn">Visitors</button>
+        <div class="dropdown-container">
+            <a href="visitorCheckInOut.html">Check Out Visitor</a>
+            <a href="visitorManagement.html">Visitor Management</a>
+            <a href="updateStatusVisitor.html">Update Status Visitor</a>
+        </div>
+        <button class="dropdown-btn">Facility</button>
+        <div class="dropdown-container">
+            <a href="addNewFacility.html">Add Facility</a>
+            <a href="facilityList.html">Manage Facility</a>
+        </div>
+        <button class="dropdown-btn">Complaint</button>
+        <div class="dropdown-container">
+            <a href="reportList.html">Manage Complaint</a>
+        </div>
+    </div>
+
+    <!-- Top Navigation Bar -->
+    <div class="top-nav">
+    <div class="website-name">Smart Resident Management System</div>
+    <div class="username">
+        <button id="usernameBtn">username</button>
+        <div class="dropdown" id="dropdownMenu">
+            <a href="myAccount.html">My Account</a>
+            <a href="loginForm.html">Log Out</a>
+        </div>
+    </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <h1 class="txtWelcome">Welcome to Smart Resident Management System</h1>
+        
+        <!-- Form Section -->
+        <div class="form-container">
+            <form id="registerForm" action="/submit-form" method="post">
+                <label for="fullName">Full Name</label>
+                <input type="text" id="fullName" name="fullName" placeholder="Your full name.." required>
+
+                <label for="dob">Date of Birth</label>
+                <input type="date" id="dob" name="dob" required>
+
+                <label for="gender">Gender</label>
+                <select id="gender" name="gender" required>
+                    <option value="">Select gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                </select>
+
+                <label for="mobileNumber">Mobile Number</label>
+                <input type="text" id="mobileNumber" name="mobileNumber" placeholder="Your mobile number.." required>
+
+                <!-- Avatar upload -->
+                <label for="avatar">Avatar</label>
+                <input type="file" id="avatar" name="avatar" accept="image/*" onchange="previewImage(event)">
+                <div class="img-preview-container">
+                    <img id="imgPreview" class="img-preview" src="#" alt="Preview Image">
+                </div>
+
+                <div>
+                    <button type="submit">Update</button>
+                    <button type="button" class="cancelbtn" onclick="resetForm()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            // Firebase configuration
+            const firebaseConfig = {
+                apiKey: "AIzaSyDUrwSd3rJvJKe0gOG5E0U68ow-fPGOLPA",
+                authDomain: "loginhtml-b6a38.firebaseapp.com",
+                databaseURL: "https://loginhtml-b6a38-default-rtdb.firebaseio.com",
+                projectId: "loginhtml-b6a38",
+                storageBucket: "loginhtml-b6a38.appspot.com",
+                messagingSenderId: "888243437180",
+                appId: "1:888243437180:web:5faad9d368f11ee6b1d3f9",
+                measurementId: "G-VXJT8PMFPF"
+            };
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+            const dbRef = firebase.database().ref();
+
+            // Retrieve fullName from local storage
+            const fullName = localStorage.getItem('fullName');
+            console.log('Retrieved fullName:', fullName);
+
+            if (!fullName) {
+                console.log('No fullName found in local storage.');
+                return;
+            }
+
+            // Fetch user details from Firebase based on fullName
+            dbRef.child('users').orderByChild('fullName').equalTo(fullName).once('value', snapshot => {
+                const userData = snapshot.val();
+                console.log('Fetched user data:', userData);
+                
+                if (userData) {
+                    const userId = Object.keys(userData)[0]; // Get the first userID from the result
+                    const user = userData[userId];
+                    
+                    // Populate form fields with fetched data
+                    document.getElementById('fullName').value = user.fullName || '';
+                    document.getElementById('dob').value = user.dob || '';
+                    document.getElementById('gender').value = user.gender || '';
+                    document.getElementById('mobileNumber').value = user.mobileNumber || '';
+                    
+                    // Save userID to localStorage
+                    localStorage.setItem('userID', userId);
+                } else {
+                    console.error('No user data found for the given fullName.');
+                }
+            }).catch(error => {
+                console.error('Error fetching user data:', error);
+            });
+
+            // Handle form submission
+            document.getElementById('registerForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                // Get form values
+                const fullName = document.getElementById('fullName').value;
+                const dob = document.getElementById('dob').value;
+                const gender = document.getElementById('gender').value;
+                const mobileNumber = document.getElementById('mobileNumber').value;
+
+                // Retrieve userID from local storage
+                const userID = localStorage.getItem('userID');
+                if (!userID) {
+                    console.error('No userID found in local storage.');
+                    return;
+                }
+
+                // Prepare updated data
+                const updatedData = {
+                    fullName,
+                    dob,
+                    gender,
+                    mobileNumber
+                };
+
+                // Update user record in Firebase
+                dbRef.child(`users/${userID}`).update(updatedData, error => {
+                    if (error) {
+                        console.error('Error updating user data:', error);
+                    } else {
+                        // Store the updated fullName in localStorage
+                        localStorage.setItem('fullName', fullName);
+                        alert('User profile updated successfully!');
+                        // Optionally, you can redirect the user to another page
+                        window.location.href = "dashboard.html";
+
+                    }
+                });
+            });
+
+            // Handle image preview
+            function previewImage(event) {
+                const reader = new FileReader();
+                reader.onload = function() {
+                    const imgPreview = document.getElementById('imgPreview');
+                    imgPreview.src = reader.result;
+                    imgPreview.style.display = 'block';
+                };
+                reader.readAsDataURL(event.target.files[0]);
+            }
+
+            // Handle form reset
+            function resetForm() {
+                document.getElementById('registerForm').reset();
+                document.getElementById('imgPreview').style.display = 'none';
+            }
+
+            // Assign functions to global scope
+            window.previewImage = previewImage;
+            window.resetForm = resetForm;
+        });
+    </script>
+</body>
+</html>

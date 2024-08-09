@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/visitorManagement.css">
+    <link rel="stylesheet" href="css/nav.css">
+    <script type="module" src="js/sideNav.js"></script>
+    <script type="module" src="js/script.js"></script>
+    <title>Smart Resident Management System - Announcements</title>
+    <style>
+        .filter-container {
+            padding: 10px;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .filter-container label {
+            margin-right: 10px;
+        }
+
+        .filter-container select {
+            padding: 5px;
+        }
+
+        .announcement-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .announcement-table th, .announcement-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        .announcement-table th {
+            background-color: #333;
+            color: white;
+        }
+
+        .announcement-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .announcement-table tr:hover {
+            background-color: green;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Left Navigation Bar -->
+    <div class="left-nav">
+        <a href="dashboard.html" class="logo-link">
+            <img src="img/Synergy_transparent.png" alt="Synergy Logo" class="logo-img">
+        </a>
+        <button class="dropdown-btn">Bulletin</button>
+        <div class="dropdown-container">
+            <a href="addNewBulletIn.html">Add Bulletin</a>
+            <a href="bulletInList.html">Manage Bulletin</a>
+        </div>
+        <button class="dropdown-btn">Payment</button>
+        <div class="dropdown-container">
+            <a href="paymentList.html">Manage Payment</a>
+            <a href="addPayment.html">Add Payment</a>
+        </div>
+        <button class="dropdown-btn">Visitors</button>
+        <div class="dropdown-container">
+            <a href="visitorCheckInOut.html">Check Out Visitor</a>
+            <a href="visitorManagement.html">Visitor Management</a>
+            <a href="updateStatusVisitor.html">Update Status Visitor</a>
+        </div>
+        <button class="dropdown-btn">Facility</button>
+        <div class="dropdown-container">
+            <a href="addNewFacility.html">Add Facility</a>
+            <a href="facilityList.html">Manage Facility</a>
+        </div>
+        <button class="dropdown-btn">Complaint</button>
+        <div class="dropdown-container">
+            <a href="reportList.html">Manage Complaint</a>
+        </div>
+    </div>
+
+<!-- Top Navigation Bar -->
+<div class="top-nav">
+    <div class="website-name">Smart Resident Management System</div>
+    <div class="username">
+        <button id="usernameBtn">username</button>
+        <div class="unit-id" id="unitIDDisplay"></div>
+        <div class="dropdown" id="dropdownMenu">
+            <a href="myAccount.html">My Account</a>
+            <a href="ownerLogin.html">Log Out</a>
+        </div>
+    </div>
+</div>
+
+    <!-- Main Content Area for Announcements -->
+    <div class="main-content">
+        <div class="filter-container">
+            <label for="recordsFilter">Show Records:</label>
+            <select id="recordsFilter">
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </div>
+
+        <table class="announcement-table" id="announcementTable">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Sender</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Table rows will be inserted here by JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDUrwSd3rJvJvJKe0gOG5E0U68ow-fPGOLPA",
+            authDomain: "loginhtml-b6a38.firebaseapp.com",
+            databaseURL: "https://loginhtml-b6a38-default-rtdb.firebaseio.com",
+            projectId: "loginhtml-b6a38",
+            storageBucket: "loginhtml-b6a38.appspot.com",
+            messagingSenderId: "888243437180",
+            appId: "1:888243437180:web:5faad9d368f11ee6b1d3f9",
+            measurementId: "G-VXJT8PMFPF"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            const recordsFilter = document.getElementById('recordsFilter');
+            recordsFilter.addEventListener('change', fetchAndDisplayAnnouncements);
+
+            await fetchAndDisplayAnnouncements(); // Fetch and display announcements on page load
+        });
+
+        async function fetchAndDisplayAnnouncements() {
+            const recordsCount = parseInt(document.getElementById('recordsFilter').value);
+            const announcementsRef = ref(db, 'bulletins');
+            const snapshot = await get(announcementsRef);
+
+            const announcements = snapshot.val();
+            const announcementTableBody = document.getElementById('announcementTable').getElementsByTagName('tbody')[0];
+            announcementTableBody.innerHTML = '';
+
+            // Convert announcements object to an array and sort by date in descending order
+            const sortedAnnouncements = Object.values(announcements).sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            let count = 0;
+            for (const announcement of sortedAnnouncements) {
+                if (count >= recordsCount) break;
+
+                const row = document.createElement('tr');
+
+                const date = new Date(announcement.date);
+                const formattedDate = `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
+
+                row.innerHTML = `
+                    <td>${announcement.title}</td>
+                    <td>admin</td>
+                    <td>${announcement.date}</td>
+
+                `;
+
+                // Add click event to store bulletID and navigate to detail page
+                row.addEventListener('click', () => {
+                    localStorage.setItem('bulletID', announcement.bulletID);
+                    window.location.href = 'detailBulletIn.html';
+                });
+
+                announcementTableBody.appendChild(row);
+                count++;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Resident Management System</title>
+    <script src="js/script.js"></script>
+    <script type="module" src="js/sideNav.js"></script>
+    <link rel="stylesheet" href="css/nav.css">
+    <link rel="stylesheet" href="css/reserveFacility.css">
+    <link rel="stylesheet" href="css/paymentList.css">
+    
+    <style>
+        /* Popup styles */
+        .popup {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .popup-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+        }
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close-btn:hover,
+        .close-btn:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .receipt-container {
+            text-align: center;
+            margin-top: 200px;
+        }
+        /* Print specific styles */
+        @media print {
+            .popup {
+                display: none; 
+            }
+            .popup-content {
+                width: 100%;
+                margin: 0;
+                padding: 0;
+                border: none;
+                background-color: #fefefe;
+            }
+
+            .close-btn,
+            .btnPrint,
+            h2,
+            #otherNonPrintElements {
+                display: none;
+            }
+
+            #popupContent {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Left Navigation Bar -->
+    <div class="left-nav">
+        <a href="dashboard.html" class="logo-link">
+            <img src="img/Synergy_transparent.png" alt="Synergy Logo" class="logo-img">
+        </a>
+        <button class="dropdown-btn">Bulletin</button>
+        <div class="dropdown-container">
+            <a href="addNewBulletIn.html">Add Bulletin</a>
+            <a href="bulletInList.html">Manage Bulletin</a>
+        </div>
+        <button class="dropdown-btn">Payment</button>
+        <div class="dropdown-container">
+            <a href="paymentList.html">Manage Payment</a>
+            <a href="addPayment.html">Add Payment</a>
+        </div>
+        <button class="dropdown-btn">Visitors</button>
+        <div class="dropdown-container">
+            <a href="visitorCheckInOut.html">Check Out Visitor</a>
+            <a href="visitorManagement.html">Visitor Management</a>
+            <a href="updateStatusVisitor.html">Update Status Visitor</a>
+        </div>
+        <button class="dropdown-btn">Facility</button>
+        <div class="dropdown-container">
+            <a href="addNewFacility.html">Add Facility</a>
+            <a href="facilityList.html">Manage Facility</a>
+        </div>
+        <button class="dropdown-btn">Complaint</button>
+        <div class="dropdown-container">
+            <a href="reportList.html">Manage Complaint</a>
+        </div>
+    </div>
+
+    <!-- Top Navigation Bar -->
+    <div class="top-nav">
+        <div class="website-name">Smart Resident Management System</div>
+        <div class="username">
+            <button id="usernameBtn">username</button>
+            <div class="unit-id" id="unitIDDisplay"></div>
+            <div class="dropdown" id="dropdownMenu">
+                <a href="myAccount.html">My Account</a>
+                <a href="ownerLogin.html">Log Out</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Centralized Content -->
+    <div class="main-content">
+        <!-- Payment List -->
+        <div class="payment-list">
+            <h1 class="txtWelcome">My Payments</h1>
+            <div class="statusFilter">
+                <label for="statusFilter">Filter by Status:</label>
+                <select id="statusFilter">
+                    <option value="all">All</option>
+                    <option value="paid">Paid</option>
+                    <option value="unpaid">Unpaid</option>
+                </select>
+            </div>
+            <table id="paymentList">
+                <thead>
+                    <tr>
+                        <th>Payment ID</th>
+                        <th>Booking ID</th>
+                        <th>Unit ID</th>
+                        <th>Amount</th>
+                        <th>Payment Details</th>
+                        <th>Payment Category</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Payment data will be populated here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Popup for Payment Details -->
+    <div id="paymentPopup" class="popup">
+        <div class="popup-content" id="popupContent">
+            <span class="close-btn">&times;</span>
+            <h2>Payment Details</h2>
+            <div id="popupDetails"></div>
+            <button onclick="printPopup()" class="btnPrint">
+                <img src="../img/print.png" alt="Print Image" style="width: 32px; height: 32px;">
+            </button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+        import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
+    
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDUrwSd3rJvJKe0gOG5E0U68ow-fPGOLPA",
+            authDomain: "loginhtml-b6a38.firebaseapp.com",
+            databaseURL: "https://loginhtml-b6a38-default-rtdb.firebaseio.com",
+            projectId: "loginhtml-b6a38",
+            storageBucket: "loginhtml-b6a38.appspot.com",
+            messagingSenderId: "888243437180",
+            appId: "1:888243437180:web:5faad9d368f11ee6b1d3f9",
+            measurementId: "G-VXJT8PMFPF"
+        };
+    
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+    
+        // Expose payNow function globally
+        window.payNow = async function(paymentID) {
+            try {
+                console.log(`Processing payment for ID: ${paymentID}`);
+
+                // Save paymentID to localStorage
+                localStorage.setItem('paymentID', paymentID);
+                alert(`Processing payment for ID: ${paymentID}`);
+    
+                const paymentRef = ref(db, `payments/${paymentID}`);
+                const paymentSnapshot = await get(paymentRef);
+                const payment = paymentSnapshot.val();
+    
+                if (!payment) {
+                    console.error('Payment record not found');
+                    return;
+                }
+    
+                if (payment.status === 'paid') {
+                    console.log('Payment already completed.');
+                    return;
+                }
+    
+                console.log('Updating payment record...');
+                const now = new Date().toISOString();
+                await set(paymentRef, {
+                    ...payment,
+                    paymentDate: now, // Add paymentDate field
+                    status: 'paid'
+                });
+                
+                console.log(`Payment updated with paymentDate for paymentID: ${paymentID}`);
+                window.location.href = 'paypal.html';
+                // Reload payments to reflect changes
+                loadPayments();
+            } catch (error) {
+                console.error('Error processing payment:', error);
+            }
+        };
+    
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show alert or notification
+            alert('Fetching payment data, please wait...');
+            loadPayments();
+            document.getElementById('statusFilter').addEventListener('change', filterPayments);
+    
+            // Attach event listeners to dynamically created "Pay Now" buttons
+            document.getElementById('paymentList').addEventListener('click', function(event) {
+                if (event.target && event.target.nodeName === 'BUTTON' && event.target.textContent === 'Pay Now') {
+                    const paymentID = event.target.getAttribute('data-payment-id');
+                    payNow(paymentID);
+                }
+            });
+
+            // Attach event listener for row clicks to show popup
+            document.getElementById('paymentList').addEventListener('click', function(event) {
+                if (event.target && event.target.nodeName === 'TD') {
+                    const row = event.target.parentNode;
+                    const paymentID = row.cells[0].textContent;
+                    showPaymentPopup(paymentID);
+                }
+            });
+        });
+    
+        async function loadPayments() {
+            try {
+                const paymentRef = ref(db, 'payments');
+                const paymentSnapshot = await get(paymentRef);
+                const payments = paymentSnapshot.val();
+                const paymentList = document.getElementById('paymentList').getElementsByTagName('tbody')[0];
+                paymentList.innerHTML = '';
+    
+                if (!payments) {
+                    console.log('No payments found');
+                    return;
+                }
+    
+                for (const paymentID in payments) {
+                    const payment = payments[paymentID];
+                    const row = paymentList.insertRow();
+                    row.classList.add(payment.status);
+                    row.innerHTML = `
+                        <td>${payment.paymentID}</td>
+                        <td>${payment.bookingID !== undefined ? payment.bookingID : 'Null'}</td>
+                        <td>${payment.unitID}</td>
+                        <td>${payment.amount}</td>
+                        <td>${payment.paymentDetails}</td>
+                        <td>${payment.paymentCategory}</td>
+                        <td>${payment.status}</td>
+                        <td>
+                            ${payment.status === 'paid' ? formatDate(payment.paymentDate) : `<button class="pay-now" data-payment-id="${payment.paymentID}">Pay Now</button>`}
+                        </td>
+                    `;
+                }
+                filterPayments(); // Ensure the filter is applied after loading payments
+            } catch (error) {
+                console.error('Error loading payments:', error);
+            }
+        }
+    
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+    
+        function filterPayments() {
+            try {
+                const filterValue = document.getElementById('statusFilter').value;
+                const paymentList = document.getElementById('paymentList').getElementsByTagName('tbody')[0];
+                const rows = paymentList.getElementsByTagName('tr');
+    
+                for (const row of rows) {
+                    const status = row.getElementsByTagName('td')[6].textContent;
+                    if (filterValue === 'all' || filterValue === status) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                }
+            } catch (error) {
+                console.error('Error filtering payments:', error);
+            }
+        }
+
+        async function showPaymentPopup(paymentID) {
+            try {
+                const paymentRef = ref(db, `payments/${paymentID}`);
+                const paymentSnapshot = await get(paymentRef);
+                const payment = paymentSnapshot.val();
+
+                if (!payment) {
+                    console.error('Payment record not found');
+                    return;
+                }
+
+                const popupDetails = document.getElementById('popupDetails');
+                popupDetails.innerHTML = `
+                    <div style="text-align: center;">
+                        <img src="../img/Synergy_transparent.png" alt="Company Logo" style="width: 150px; height: auto;">
+                    </div>
+                    <h3 style="text-align: center;">Receipt</h3>
+                    <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+                    <p><strong>Payment ID:</strong> ${payment.paymentID}</p>
+                    <p><strong>Booking ID:</strong> ${payment.bookingID ? payment.bookingID : 'Null'}</p>
+                    <p><strong>Unit ID:</strong> ${payment.unitID}</p>
+                    <p><strong>Amount:</strong> ${payment.amount}</p>
+                    <p><strong>Payment Details:</strong> ${payment.paymentDetails}</p>
+                    <p><strong>Payment Category:</strong> ${payment.paymentCategory}</p>
+                    <p><strong>Status:</strong> ${payment.status}</p>
+                    <p><strong>Payment Date:</strong> ${payment.status === 'paid' ? formatDate(payment.paymentDate) : 'N/A'}</p>
+                    <div style="text-align: center; margin-top: 20px;">
+                        <p>Thank you for your payment!</p>
+                    </div>
+                `;
+
+                const popup = document.getElementById('paymentPopup');
+                popup.style.display = 'block';
+
+                // Close button functionality
+                const closeBtn = document.getElementsByClassName('close-btn')[0];
+                closeBtn.onclick = function() {
+                    popup.style.display = 'none';
+                };
+
+                // Close the popup if the user clicks outside of the popup
+                window.onclick = function(event) {
+                    if (event.target == popup) {
+                        popup.style.display = 'none';
+                    }
+                };
+
+                // Print button functionality
+                document.querySelector('.btnPrint').onclick = function() {
+                    printPopup();
+                };
+            } catch (error) {
+                console.error('Error showing payment popup:', error);
+            }
+        }
+
+        function printPopup() {
+            const popupContent = document.getElementById('popupContent').innerHTML;
+            const originalContent = document.body.innerHTML;
+            document.body.innerHTML = popupContent;
+            window.print();
+            document.body.innerHTML = originalContent;
+            window.location.reload();
+        }
+    </script>
+</body>
+</html>

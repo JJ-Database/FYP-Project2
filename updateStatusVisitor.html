@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/visitorManagement.css">
+    <link rel="stylesheet" href="css/nav.css">
+    <link rel="stylesheet" href="css/updateStatusVisitor.css">
+    <script type="module" src="js/sideNav.js"></script>
+    <script type="module" src="js/script.js"></script>
+    <title>Smart Resident Management System</title>
+    <style>
+        /* Status Styles */
+        .status-pending {
+            background-color: red;
+            color: white;
+            animation: blink 3s linear infinite;
+        }
+
+        .status-rejected {
+            background-color: red;
+            color: white;
+        }
+
+        .status-approved {
+            background-color: lightgreen;
+            color: black;
+        }
+
+        @keyframes blink {
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
+
+        /* Row highlight styles */
+        .row-highlight {
+            border: 2px solid #000;
+        }
+
+        /* Styles for View Details Button */
+        .view-details-btn {
+            border-radius: 10px;
+            background-color: #007BFF; /* Change to your desired background color */
+            color: white; /* Change to your desired text color */
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        .view-details-btn:hover {
+            background-color: #0056b3; /* Change to your desired hover background color */
+        }
+
+    </style>
+</head>
+
+<body>
+    <!-- Left Navigation Bar -->
+    <div class="left-nav">
+        <a href="dashboard.html" class="logo-link">
+            <img src="img/Synergy_transparent.png" alt="Synergy Logo" class="logo-img">
+        </a>
+        <button class="dropdown-btn">Bulletin</button>
+        <div class="dropdown-container">
+            <a href="addNewBulletIn.html">Add Bulletin</a>
+            <a href="bulletInList.html">Manage Bulletin</a>
+        </div>
+        <button class="dropdown-btn">Payment</button>
+        <div class="dropdown-container">
+            <a href="paymentList.html">Manage Payment</a>
+            <a href="addPayment.html">Add Payment</a>
+        </div>
+        <button class="dropdown-btn">Visitors</button>
+        <div class="dropdown-container">
+            <a href="visitorCheckInOut.html">Check Out Visitor</a>
+            <a href="visitorManagement.html">Visitor Management</a>
+            <a href="updateStatusVisitor.html">Update Status Visitor</a>
+        </div>
+        <button class="dropdown-btn">Facility</button>
+        <div class="dropdown-container">
+            <a href="addNewFacility.html">Add Facility</a>
+            <a href="facilityList.html">Manage Facility</a>
+        </div>
+        <button class="dropdown-btn">Complaint</button>
+        <div class="dropdown-container">
+            <a href="reportList.html">Manage Complaint</a>
+        </div>
+    </div>
+    <div class="top-nav">
+        <div class="website-name">Smart Resident Management System</div>
+        <div class="username">
+            <button id="usernameBtn">username</button>
+            <div class="dropdown" id="dropdownMenu">
+                <a href="myAccount.html">My Account</a>
+                <a href="loginForm.html">Log Out</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <h1 class="txtWelcome">Visitor Management</h1>
+
+        <div class="form-container" id="visitorFormContainer">
+            <form id="visitorForm">
+                <label for="category">Category</label>
+                <select id="category" name="category" required>
+                    <option value="">Select Category</option>
+                </select>
+
+                <label for="fullName">Full Name</label>
+                <input type="text" id="fullName" name="fullName" placeholder="Visitor's full name.." required>
+
+                <label for="phoneNumber">Phone Number</label>
+                <input type="text" id="phoneNumber" name="phoneNumber" placeholder="Visitor's phone number.." required>
+
+                <label for="idCardNumber">ID Card Number</label>
+                <input type="text" id="idCardNumber" name="idCardNumber" placeholder="Visitor's ID card number.." required>
+
+                <label for="vehicleNumber">Vehicle Number</label>
+                <input type="text" id="vehicleNumber" name="vehicleNumber" placeholder="Visitor's vehicle number..">
+
+                <label for="remarks">Remarks</label>
+                <input type="text" id="remarks" name="remarks" placeholder="Any remarks..">
+
+                <label for="visitDate">Visit Date</label>
+                <input type="date" id="visitDate" name="visitDate" required>
+
+                <div>
+                    <button type="submit">Submit</button>
+                    <button type="button" class="cancelbtn" onclick="resetForm()">Cancel</button>
+                </div>
+            </form>
+        </div>
+        <div class="success-message" id="successMessage">Registration successful!</div>
+
+        <div class="visitor-list-container" id="visitorListContainer">
+            <h2>Visitor List</h2>
+            <label for="statusFilter">Select Status:</label>
+            <select id="statusFilter">
+                <option value="all">All</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+                <option value="pending">Pending</option>
+            </select>
+            <button id="searchVisitorsBtn">Search</button>
+            <table id="visitorListTable">
+                <thead>
+                    <tr>
+                        <th>Visitor Number</th>
+                        <th>Full Name</th>
+                        <th>Phone Number</th>
+                        <th>ID Card Number</th>
+                        <th>Vehicle Number</th>
+                        <th>Category</th>
+                        <th>Visit Date</th>
+                        <th>Remarks</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Visitor data will be populated here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="visitorDetailsPopup" class="popup">
+        <div class="popup-content">
+            <h3>Visitor Details</h3>
+            <label for="popupCategory">Category</label>
+            <input type="text" id="popupCategory" readonly>
+
+            <label for="popupFullName">Full Name</label>
+            <input type="text" id="popupFullName" readonly>
+
+            <label for="popupIDCardNumber">ID Card Number</label>
+            <input type="text" id="popupIDCardNumber" readonly>
+
+            <label for="popupOvernightParking">Overnight Parking</label>
+            <input type="text" id="popupOvernightParking" readonly>
+
+            <label for="popupPhoneNumber">Phone Number</label>
+            <input type="text" id="popupPhoneNumber" readonly>
+
+            <label for="popupRemarks">Remarks</label>
+            <input type="text" id="popupRemarks" readonly>
+
+            <label for="popupStatus">Status</label>
+            <select id="popupStatus">
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+                <option value="pending">Pending</option>
+            </select>
+
+            <label for="popupUnitID">Unit ID</label>
+            <input type="text" id="popupUnitID" readonly>
+
+            <label for="popupVehicleNumber">Vehicle Number</label>
+            <input type="text" id="popupVehicleNumber" readonly>
+
+            <label for="popupVisitDate">Visit Date</label>
+            <input type="text" id="popupVisitDate" readonly>
+
+            <label for="popupVisitorID">Visitor ID</label>
+            <input type="text" id="popupVisitorID" readonly>
+
+            <button id="popupSaveBtn">Save</button>
+            <button id="popupCloseBtn">Close</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+    import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDUrwSd3rJvJKe0gOG5E0U68ow-fPGOLPA",
+        authDomain: "loginhtml-b6a38.firebaseapp.com",
+        databaseURL: "https://loginhtml-b6a38-default-rtdb.firebaseio.com",
+        projectId: "loginhtml-b6a38",
+        storageBucket: "loginhtml-b6a38.appspot.com",
+        messagingSenderId: "888243437180",
+        appId: "1:888243437180:web:5faad9d368f11ee6b1d3f9",
+        measurementId: "G-VXJT8PMFPF"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchVisitorsBtn = document.getElementById('searchVisitorsBtn');
+        searchVisitorsBtn.addEventListener('click', searchVisitors);
+
+        const popupSaveBtn = document.getElementById('popupSaveBtn');
+        popupSaveBtn.addEventListener('click', saveVisitorDetails);
+
+        const popupCloseBtn = document.getElementById('popupCloseBtn');
+        popupCloseBtn.addEventListener('click', closePopup);
+
+        function resetForm() {
+            document.getElementById('visitorForm').reset();
+        }
+
+        function searchVisitors() {
+    const statusFilter = document.getElementById('statusFilter').value || 'all';
+    const visitorsRef = ref(db, 'visitors');
+    
+    get(visitorsRef).then((snapshot) => {
+        const tableBody = document.getElementById('visitorListTable').getElementsByTagName('tbody')[0];
+        tableBody.innerHTML = ''; // Clear previous results
+
+        if (snapshot.exists()) {
+            const data = snapshot.val();
+            let recordsFound = false;
+
+            Object.keys(data).forEach(visitorID => {
+                const visitorData = data[visitorID];
+                const visitorStatus = visitorData.status ? visitorData.status.toLowerCase() : 'unknown';
+
+                // Check if the visitor status matches the filter
+                if (statusFilter === 'all' || visitorStatus === statusFilter) {
+                    recordsFound = true;
+
+                    const row = tableBody.insertRow();
+                    row.classList.add('row-highlight');
+                    row.classList.add(`status-${visitorStatus}`);
+
+                    row.innerHTML = `
+                        <td>${visitorData.visitorID || 'N/A'}</td>
+                        <td>${visitorData.fullName || 'N/A'}</td>
+                        <td>${visitorData.phoneNumber || 'N/A'}</td>
+                        <td>${visitorData.idCardNumber || 'N/A'}</td>
+                        <td>${visitorData.vehicleNumber || 'N/A'}</td>
+                        <td>${visitorData.category || 'N/A'}</td>
+                        <td>${visitorData.visitDate || 'N/A'}</td>
+                        <td>${visitorData.remarks || 'N/A'}</td>
+                        <td class="status-${visitorStatus}">${visitorData.status || 'N/A'}</td>
+                        <td><button class="view-details-btn" data-id="${visitorData.visitorID || ''}">View Details</button></td>
+                    `;
+                }
+            });
+
+            if (!recordsFound) {
+                const row = tableBody.insertRow();
+                row.innerHTML = '<td colspan="10" style="text-align: center;">No records found</td>';
+            }
+
+            // Attach event listeners to "View Details" buttons
+            const viewDetailButtons = document.getElementsByClassName('view-details-btn');
+            Array.from(viewDetailButtons).forEach(button => {
+                button.addEventListener('click', function (event) {
+                    const visitorID = event.target.getAttribute('data-id');
+                    showVisitorDetails(visitorID);
+                });
+            });
+        } else {
+            const row = tableBody.insertRow();
+            row.innerHTML = '<td colspan="10" style="text-align: center;">No data available</td>';
+        }
+    }).catch((error) => {
+        console.error("Error fetching visitors:", error);
+    });
+}
+
+
+        function showVisitorDetails(visitorID) {
+            const visitorRef = ref(db, `visitors/${visitorID}`);
+            get(visitorRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const visitorData = snapshot.val();
+                    document.getElementById('popupCategory').value = visitorData.category;
+                    document.getElementById('popupFullName').value = visitorData.fullName;
+                    document.getElementById('popupIDCardNumber').value = visitorData.idCardNumber;
+                    document.getElementById('popupOvernightParking').value = visitorData.overnightParking ? "Yes" : "No";
+                    document.getElementById('popupPhoneNumber').value = visitorData.phoneNumber;
+                    document.getElementById('popupRemarks').value = visitorData.remarks;
+                    document.getElementById('popupStatus').value = visitorData.status;
+                    document.getElementById('popupUnitID').value = visitorData.unitID;
+                    document.getElementById('popupVehicleNumber').value = visitorData.vehicleNumber;
+                    document.getElementById('popupVisitDate').value = visitorData.visitDate;
+                    document.getElementById('popupVisitorID').value = visitorData.visitorID;
+                    document.getElementById('visitorDetailsPopup').style.display = 'block';
+                } else {
+                    console.error("No data available for visitor ID:", visitorID);
+                }
+            }).catch((error) => {
+                console.error("Error fetching visitor details:", error);
+            });
+        }
+
+        function saveVisitorDetails() {
+            const visitorID = document.getElementById('popupVisitorID').value;
+            const updatedStatus = document.getElementById('popupStatus').value;
+            const updates = {};
+            updates[`visitors/${visitorID}/status`] = updatedStatus;
+            update(ref(db), updates).then(() => {
+                console.log("Visitor status updated successfully");
+                closePopup();
+                searchVisitors();
+            }).catch((error) => {
+                console.error("Error updating visitor status:", error);
+            });
+        }
+
+        function closePopup() {
+            document.getElementById('visitorDetailsPopup').style.display = 'none';
+        }
+    });
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Resident Management System</title>
+    <link href="css/visitorMenu.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/nav.css">
+    <script src="js/script.js"></script>
+    <script src="js/sideNav.js"></script>
+    <style>
+        .main-content {
+            margin-left: 200px;
+            margin-top: 50px;
+            padding: 2em;
+            overflow-y: auto;
+            flex-grow: 1;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .box-container {
+            padding: 10px;
+            width: 300px;
+            height: 200px;
+            border: 1px solid #ccc;
+            display: flex;
+            align-items: center;
+            border-radius: 20px;
+            color: black;
+            background-color: bisque;
+        }
+
+        .box-container img {
+            width: 100px;
+            height: 100px;
+            border-radius: 5px;
+        }
+
+        .box-text {
+            padding: 10px;
+        }
+
+        .box-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .box-number {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        #tdyVisitors {
+            background-color: lightgreen;
+        }
+
+        #ytdVisitors {
+            background-color: lightcoral;
+        }
+        .box-container span{
+            font-size: 50px;
+        }
+    </style>
+</head>
+<body>
+        <!-- Left Navigation Bar -->
+        <div class="left-nav">
+            <a href="dashboard.html" class="logo-link">
+                <img src="img/Synergy_transparent.png" alt="Synergy Logo" class="logo-img">
+            </a>
+            <button class="dropdown-btn">Bulletin</button>
+            <div class="dropdown-container">
+                <a href="addNewBulletIn.html">Add Bulletin</a>
+                <a href="bulletInList.html">Manage Bulletin</a>
+            </div>
+            <button class="dropdown-btn">Payment</button>
+            <div class="dropdown-container">
+                <a href="paymentList.html">Manage Payment</a>
+                <a href="addNewPayment.html">Payment</a>
+            </div>
+            <button class="dropdown-btn">Visitors</button>
+            <div class="dropdown-container">
+                <a href="visitorCheckInOut.html">Check Out Visitor</a>
+                <a href="visitorManagement.html">Visitor Management</a>
+            </div>
+            <button class="dropdown-btn">Facility</button>
+            <div class="dropdown-container">
+                <a href="addNewFacility.html">Add Facility</a>
+                <a href="facilityList.html">Manage Facility</a>
+            </div>
+            <button class="dropdown-btn">Reports</button>
+            <div class="dropdown-container">
+                <a href="addNewReport.html">Add Report</a>
+                <a href="reportList.html">Manage Report</a>
+            </div>
+            <a href="#">Settings</a>
+        </div>
+
+    <!-- Top Navigation Bar -->
+    <div class="top-nav">
+        <div class="website-name">Smart Resident Management System</div>
+        <div class="username">
+            <button id="usernameBtn">username</button>
+            <div class="dropdown" id="dropdownMenu">
+                <a href="myAccount.html">My Account</a>
+                <a href="loginForm.html">Log Out</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <!-- Box Container 1 -->
+        <div class="box-container" id="tdyVisitors">
+            <img src="img/Visitor-Profile-User-Transparent.png" alt="Placeholder Image">
+            <div class="box-text">
+                <div class="box-title">Total Visitor</div>
+                <span class="box-number box-number1">0</span>
+            </div>
+        </div>
+
+        <!-- Box Container 2 -->
+        <div class="box-container" id="ytdVisitors">
+            <img src="img/Visitor-Profile-User-Transparent.png" alt="Placeholder Image">
+            <div class="box-text">
+                <div class="box-title">Total BulletIn</div>
+                <span class="box-number box-number2">0</span>
+            </div>
+        </div>
+
+        <!-- Box Container 3 -->
+        <div class="box-container" id="last7Visitors">
+            <img src="img/Visitor-Profile-User-Transparent.png" alt="Placeholder Image">
+            <div class="box-text">
+                <div class="box-title">Total Payment Made</div>
+                <span class="box-number box-number3">0</span>
+            </div>
+        </div>
+
+        <!-- Box Container 4 -->
+        <div class="box-container" id="totalVisitors">
+            <img src="img/Visitor-Profile-User-Transparent.png" alt="Placeholder Image">
+            <div class="box-text">
+                <div class="box-title">Total Facility</div>
+                <span class="box-number box-number4">0</span>
+            </div>
+        </div>
+
+        <!-- Box Container 5 -->
+        <div class="box-container">
+            <img src="img/Visitor-Profile-User-Transparent.png" alt="Placeholder Image">
+            <div class="box-text">
+                <div class="box-title">Checked-In Visitors</div>
+                <span class="box-number box-number5">0</span>
+            </div>
+        </div>
+
+        <!-- Box Container 6 -->
+        <div class="box-container">
+            <img src="img/Visitor-Profile-User-Transparent.png" alt="Placeholder Image">
+            <div class="box-text">
+                <div class="box-title">Check-Out Visitors</div>
+                <span class="box-number box-number6">0</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript for dropdown menu in the left nav
+        var dropdowns = document.getElementsByClassName("dropdown-btn");
+        for (var i = 0; i < dropdowns.length; i++) {
+            dropdowns[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                var dropdownContent = this.nextElementSibling;
+                dropdownContent.classList.toggle("show");
+                if (dropdownContent.style.display === "block") {
+                    dropdownContent.style.display = "none";
+                } else {
+                    dropdownContent.style.display = "block";
+                }
+            });
+        }
+
+    </script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDUrwSd3rJvJKe0gOG5E0U68ow-fPGOLPA",
+            authDomain: "loginhtml-b6a38.firebaseapp.com",
+            databaseURL: "https://loginhtml-b6a38-default-rtdb.firebaseio.com",
+            projectId: "loginhtml-b6a38",
+            storageBucket: "loginhtml-b6a38.appspot.com",
+            messagingSenderId: "888243437180",
+            appId: "1:888243437180:web:5faad9d368f11ee6b1d3f9",
+            measurementId: "G-VXJT8PMFPF"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Update statistics
+            updateVisitorStatistics();
+            updateBulletinStatistics();
+            updatePaymentStatistics();
+            updateFacilityStatistics();
+            updateCheckInStatistics();
+            updateCheckOutStatistics();
+        });
+
+        // Function to update visitor statistics
+        async function updateVisitorStatistics() {
+            try {
+                const dbRef = ref(db, 'visitors');
+                const snapshot = await get(dbRef);
+
+                if (snapshot.exists()) {
+                    const visitors = snapshot.val();
+                    const totalCount = Object.keys(visitors).length;
+
+                    document.querySelector('.box-number1').textContent = totalCount;
+                } else {
+                    console.log("No visitor data found.");
+                }
+            } catch (error) {
+                console.error("Error fetching visitor data:", error);
+            }
+        }
+
+        // Function to update bulletin statistics
+        async function updateBulletinStatistics() {
+            try {
+                const dbRef = ref(db, 'bulletins');
+                const snapshot = await get(dbRef);
+
+                if (snapshot.exists()) {
+                    const bulletins = snapshot.val();
+                    const totalCount = Object.keys(bulletins).length;
+
+                    document.querySelector('.box-number2').textContent = totalCount;
+                } else {
+                    console.log("No bulletin data found.");
+                }
+            } catch (error) {
+                console.error("Error fetching bulletin data:", error);
+            }
+        }
+
+        // Function to update payment statistics
+        async function updatePaymentStatistics() {
+            try {
+                const dbRef = ref(db, 'payments');
+                const snapshot = await get(dbRef);
+
+                if (snapshot.exists()) {
+                    const payments = snapshot.val();
+                    const totalCount = Object.keys(payments).length;
+
+                    document.querySelector('.box-number3').textContent = totalCount;
+                } else {
+                    console.log("No payment data found.");
+                }
+            } catch (error) {
+                console.error("Error fetching payment data:", error);
+            }
+        }
+
+        // Function to update facility statistics
+        async function updateFacilityStatistics() {
+            try {
+                const dbRef = ref(db, 'Facility');
+                const snapshot = await get(dbRef);
+
+                if (snapshot.exists()) {
+                    const facilities = snapshot.val();
+                    const totalCount = Object.keys(facilities).length;
+
+                    document.querySelector('.box-number4').textContent = totalCount;
+                } else {
+                    console.log("No facility data found.");
+                }
+            } catch (error) {
+                console.error("Error fetching facility data:", error);
+            }
+        }
+
+        // Function to update check-in statistics
+        async function updateCheckInStatistics() {
+            try {
+                const dbRef = ref(db, 'visitors');
+                const snapshot = await get(dbRef);
+
+                if (snapshot.exists()) {
+                    const visitors = snapshot.val();
+                    let checkInCount = 0;
+
+                    for (const visitor of Object.values(visitors)) {
+                        if (visitor.checkInTime) {
+                            checkInCount++;
+                        }
+                    }
+
+                    document.querySelector('.box-number5').textContent = checkInCount;
+                } else {
+                    console.log("No visitor data found.");
+                }
+            } catch (error) {
+                console.error("Error fetching visitor data:", error);
+            }
+        }
+
+        // Function to update check-out statistics
+        async function updateCheckOutStatistics() {
+            try {
+                const dbRef = ref(db, 'visitors');
+                const snapshot = await get(dbRef);
+
+                if (snapshot.exists()) {
+                    const visitors = snapshot.val();
+                    let checkOutCount = 0;
+
+                    for (const visitor of Object.values(visitors)) {
+                        if (visitor.checkOutTime) {
+                            checkOutCount++;
+                        }
+                    }
+
+                    document.querySelector('.box-number6').textContent = checkOutCount;
+                } else {
+                    console.log("No visitor data found.");
+                }
+            } catch (error) {
+                console.error("Error fetching visitor data:", error);
+            }
+        }
+
+         
+
+    </script>
+</body>
+</html>

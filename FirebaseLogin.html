@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Firebase Login Form</title>
+    <style>
+        body {
+            background: url(img/bg.jpg);
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+        .rememberMeContainer {
+            color: white;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+        .rememberMeContainer input {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+        }
+        .box {
+            background-color: #333;
+            width: 300px;
+            padding: 20px;
+            margin: auto;
+            margin-top: 10%;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .form {
+            text-align: left;
+        }
+        .inputbox {
+            margin-bottom: 20px;
+        }
+        .inputbox input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .sub {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .sub:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <div class="form">
+            <h2>Login Form</h2>
+            <form>
+                <div class="inputbox">
+                    <input type="text" id="username" placeholder="Username" required>
+                </div>
+                <div class="inputbox">
+                    <input type="email" id="email" placeholder="Email" required>
+                </div>
+                <div class="inputbox">
+                    <input type="text" id="phone" placeholder="Phone Number" required>
+                </div>
+                <div class="inputbox">
+                    <input type="password" id="password" placeholder="Password" required>
+                </div>
+                <div class="rememberMeContainer">
+                    <input type="checkbox" id="rememberMe"> Remember me!
+                </div>
+                <input type="submit" value="Login" class="sub" id="login">
+            </form>
+        </div>
+    </div>
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+        import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
+        
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDUrwSd3rJvJKe0gOG5E0U68ow-fPGOLPA",
+            authDomain: "loginhtml-b6a38.firebaseapp.com",
+            databaseURL: "https://loginhtml-b6a38-default-rtdb.firebaseio.com",
+            projectId: "loginhtml-b6a38",
+            storageBucket: "loginhtml-b6a38.appspot.com",
+            messagingSenderId: "888243437180",
+            appId: "1:888243437180:web:5faad9d368f11ee6b1d3f9",
+            measurementId: "G-VXJT8PMFPF"
+        };
+        
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        
+        // Get a reference to the database service
+        const db = getDatabase(app);
+        
+        // Check if user credentials are stored in localStorage
+        const storedUsername = localStorage.getItem('username');
+        const storedEmail = localStorage.getItem('email');
+        const storedPhone = localStorage.getItem('phone');
+        const storedUserId = localStorage.getItem('userID');
+        
+        if (storedUsername && storedEmail && storedPhone) {
+            document.getElementById('username').value = storedUsername;
+            document.getElementById('email').value = storedEmail;
+            document.getElementById('phone').value = storedPhone;
+            document.getElementById('rememberMe').checked = true;
+        }
+        
+        document.getElementById("login").addEventListener('click', function(e) {
+            e.preventDefault();
+        
+            const username = document.getElementById("username").value;
+            const email = document.getElementById("email").value;
+            const phoneNumber = document.getElementById("phone").value;
+            const password = document.getElementById("password").value;
+        
+            // Check if the user exists in the database
+            const userRef = ref(db, 'users');
+            get(userRef).then((snapshot) => {
+                const users = snapshot.val();
+                let loginSuccessful = false;
+                let userID = '';
+        
+                for (let key in users) {
+                    if (users[key].Username === username &&
+                        users[key].Email === email &&
+                        users[key].PhoneNumber === phoneNumber &&
+                        users[key].Password === password) {
+                        loginSuccessful = true;
+                        userID = key;
+                        break;
+                    }
+                }
+        
+                if (loginSuccessful) {
+                    alert("Login successful!");
+                    
+                    // Store credentials in localStorage if "Remember me" is checked
+                    if (document.getElementById('rememberMe').checked) {
+                        localStorage.setItem('username', username);
+                        localStorage.setItem('email', email);
+                        localStorage.setItem('phone', phoneNumber);
+                        localStorage.setItem('userID', userID);
+                    } else {
+                        localStorage.removeItem('username');
+                        localStorage.removeItem('email');
+                        localStorage.removeItem('phone');
+                        localStorage.removeItem('userID');
+                    }
+                    
+                    // Redirect to another page (e.g., Home.html)
+                    window.location.href = "VisitorMenu.html";
+                } else {
+                    alert("Login failed. Invalid username, email, phone number, or password.");
+                }
+            }).catch((error) => {
+                alert("Login failed. Invalid username, email, phone number, or password.");
+                console.error(error);
+            });
+        });
+    </script>
+</body>
+</html>

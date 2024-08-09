@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Background and Buttons Layout</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            font-family: Arial, sans-serif;
+        }
+
+        .background {
+            background-image: url('img/rolesBackground.png'); /* Replace with your background image path */
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            position: relative;
+            color: white;
+        }
+
+        .top-section {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 30%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .logo {
+            max-width: 100%;
+            max-height: 100%;
+            height: auto;
+            width: auto;
+        }
+
+        .bottom-section {
+            position: absolute;
+            bottom: 0;
+            width: calc(100% - 400px); /* Adjust width to account for left and right margins */
+            height: 25%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(0, 0, 0, 0.2); /* Semi-transparent black background */
+            padding: 20px;
+            box-sizing: border-box;
+            margin-left: 200px;
+            margin-right: 200px;
+            margin-bottom: 100px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            color: white;
+            opacity: 0.8; /* Slightly transparent text */
+            margin-bottom: 30px; /* Increased space below the title */
+            text-align: center;
+            z-index: 1; /* Ensure text is above buttons */
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px; /* Increased space between buttons */
+            z-index: 1; /* Ensure buttons are above background */
+        }
+
+        .action-button {
+            background-color: rgba(0, 123, 255, 0.3); /* Transparent blue background */
+            border: 2px solid #007bff;
+            color: white;
+            padding: 15px 30px;
+            height: 50px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .action-button:hover {
+            background-color: rgba(0, 123, 255, 0.5); /* Slightly less transparent on hover */
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <div class="background">
+        <div class="top-section">
+            <img src="img/Synergy_transparent.png" alt="Logo" class="logo">
+        </div>
+
+        <div class="bottom-section">
+            <div class="section-title">Select Your Role</div>
+            <div class="button-container">
+                <button class="action-button" onclick="confirmAndRedirect('Admin', 'loginForm.html')">Admin</button>
+                <button class="action-button" onclick="confirmAndRedirect('Owner', 'Owner/ownerLogin.html')">Owner</button>
+                <button class="action-button" onclick="confirmAndRedirect('Tenant', 'Tenant/tenantLogin.html')">Tenant</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function confirmAndRedirect(role, url) {
+            const message = `Are you sure you want to continue as ${role}?`;
+            if (confirm(message)) {
+                window.location.href = url;
+            }
+        }
+    </script>
+</body>
+</html>
