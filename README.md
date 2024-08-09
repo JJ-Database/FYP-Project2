@@ -35,5 +35,18 @@ Roles:-
 2. Owner
 3. Tenant
 
+Problem Statement for the current system: 
+1. The authorised entry should be more secure and prevent unauthorised entry, like smart card cloning.
+2. Data leakage and unsecure data storage.
+  
+Solution Purposed:
+1. OCR-based licensed plate system
+2. AES-256
+3. IoT (Stlimulation for authorized/unauthorized person)
+
+Advantage:-
+1. Ensure there are authorized vehicle for entry the parking for solve the parking lots problem. (No Multiple Parking)
+2. Make sure the data credential for user is storing into the secure environment. (No Data Leakage)
+
 
 
