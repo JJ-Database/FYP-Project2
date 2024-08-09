@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/visitorManagement.css">
+    <link rel="stylesheet" href="css/visitorRegistration.css">
+    <link rel="stylesheet" href="css/nav.css">
+    <script type="module" src="../js/sideNav.js"></script>
+    <script type="module" src="js/script.js"></script>
+    <title>Smart Resident Management System</title>
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            padding-top: 100px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 100px;
+            border: 1px solid grey;
+            width: 80%;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .left-side,
+        .right-side {
+            width: 45%;
+        }
+
+        .left-side {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .right-side {
+            padding-left: 20px;
+        }
+
+        #qrcode {
+            margin-top: 10px;
+        }
+
+        #visitorDetails p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+   <!-- Left Navigation Bar -->
+   <div class="left-nav">
+    <a href="dashboard.html" class="logo-link">
+        <img src="../img/Synergy_transparent.png" alt="Synergy Logo" class="logo-img">
+    </a>
+    <button class="dropdown-btn">Payment</button>
+    <div class="dropdown-container">
+        <a href="paymentReceipt.html">Manage Payment</a>
+    </div>
+    <button class="dropdown-btn">Facility</button>
+    <div class="dropdown-container">
+        <a href="bookingFacility.html">Booking Facility</a>
+        <a href="listBookings.html">List Bookings</a>
+    </div>
+    <button class="dropdown-btn">Visitors</button>
+    <div class="dropdown-container">
+        <a href="visitorRegistration.html">Visitor Registration</a>
+        <a href="listVisitors.html">List Visitors</a>
+    </div>
+    <button class="dropdown-btn">Complaint</button>
+    <div class="dropdown-container">
+        <a href="addReport.html">Add Complaint</a>
+        <a href="listReport.html">List Complaint</a>
+    </div>
+    <button class="dropdown-btn">Vehicle</button>
+    <div class="dropdown-container">
+        <a href="vehicleInterface.html">Add Vehicle</a>
+        <a href="listVehicles.html">List Vehicle</a>
+    </div>
+    <a href="findMyHouse.html">Find My House</a>
+    <a href="subTenant.html">Sub Tenant</a>
+</div>
+
+    <div class="top-nav">
+        <div class="website-name">Smart Resident Management System</div>
+        <div class="username">
+            <button id="usernameBtn">username</button>
+            <div class="unit-id" id="unitIDDisplay"></div>
+            <div class="dropdown" id="dropdownMenu">
+                <a href="myAccount.html">My Account</a>
+                <a href="ownerLogin.html">Log Out</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <h1 class="txtWelcome">Visitor Management</h1>
+        <div class="visitor-btn-container">
+            <button class="visitor-btn" id="vehicleRegistrationBtn">Vehicle Registration</button>
+            <button class="visitor-btn" id="visitorRegistrationBtn">Visitor Registration</button>
+        </div>
+
+        <div class="form-container" id="visitorFormContainer" style="display: none;">
+            <form id="visitorForm">
+                <label for="category">Category</label>
+                <select id="category" name="category" required>
+                    <option value="">Select Category</option>
+                </select>
+
+                <label for="fullName">Full Name</label>
+                <input type="text" id="fullName" name="fullName" placeholder="Visitor's full name.." required>
+
+                <label for="phoneNumber">Phone Number</label>
+                <input type="text" id="phoneNumber" name="phoneNumber" placeholder="Visitor's phone number.." required>
+
+                <label for="idCardNumber">ID Card Number</label>
+                <input type="text" id="idCardNumber" name="idCardNumber" placeholder="Visitor's ID card number.." required>
+
+                <div id="vehicleNumberContainer" style="display: none;">
+                    <label for="vehicleNumber">Vehicle Number</label>
+                    <input type="text" id="vehicleNumber" name="vehicleNumber" placeholder="Visitor's vehicle number..">
+                    
+                    <div class="overnight-parking-container">
+                        <label for="overnightParking" class="checkbox-label">
+                            <input type="checkbox" id="overnightParking" name="overnightParking">
+                            <span>Overnight Parking</span>
+                        </label>
+                    </div>
+
+                    <div id="overnightParkingDaysContainer" style="display: none;">
+                        <label for="overnightParkingDays">Number of Days</label>
+                        <input type="number" id="overnightParkingDays" name="overnightParkingDays" min="1" placeholder="Enter number of days..">
+                    </div>
+                </div>
+
+                <label for="remarks">Remarks</label>
+                <input type="text" id="remarks" name="remarks" placeholder="Any remarks..">
+
+                <label for="visitDate">Visit Date</label>
+                <input type="date" id="visitDate" name="visitDate" required>
+
+                <div>
+                    <button type="submit">Submit</button>
+                    <button type="button" class="cancelbtn" onclick="resetForm()">Cancel</button>
+                </div>
+            </form>
+        </div>
+        <div class="success-message" id="successMessage">Registration successful!</div>
+    </div>
+
+    <div id="visitorModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="left-side">
+                <p>Please show this QR Code for the Guard House.</p>
+                <div id="qrcode"></div>
+            </div>
+            <div class="right-side">
+                <h2>Visitor Details</h2>
+                <div id="visitorDetails"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+        import { getDatabase, ref, set, get, query, orderByKey, limitToLast } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
+    
+        const firebaseConfig = {
+            apiKey: "AIzaSyDUrwSd3rJvJKe0gOG5E0U68ow-fPGOLPA",
+            authDomain: "loginhtml-b6a38.firebaseapp.com",
+            databaseURL: "https://loginhtml-b6a38-default-rtdb.firebaseio.com",
+            projectId: "loginhtml-b6a38",
+            storageBucket: "loginhtml-b6a38.appspot.com",
+            messagingSenderId: "888243437180",
+            appId: "1:888243437180:web:5faad9d368f11ee6b1d3f9",
+            measurementId: "G-VXJT8PMFPF"
+        };
+    
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+    
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Set min attribute to today's date to prevent past dates
+            const visitDateInput = document.getElementById('visitDate');
+            const today = new Date().toISOString().split('T')[0];
+            visitDateInput.setAttribute('min', today);
+    
+            visitDateInput.addEventListener('change', function() {
+                const selectedDate = this.value;
+                if (selectedDate < today) {
+                    alert('Visit Date cannot be in the past.');
+                    visitDateInput.value = '';
+                }
+            });
+    
+             // Load categories for the dropdown
+            const categoriesRef = ref(db, 'settings/visitorCategory');
+            try {
+                const snapshot = await get(categoriesRef);
+                const categories = snapshot.val();
+                const categoryDropdown = document.getElementById('category');
+
+                if (categories) {
+                    // Assuming categories is an array of category names or values
+                    Object.values(categories).forEach(value => {
+                        const option = document.createElement('option');
+                        option.value = value;
+                        option.text = value;
+                        categoryDropdown.appendChild(option);
+                    });
+                } else {
+                    console.error("No categories found.");
+                }
+            } catch (error) {
+                console.error("Error retrieving categories:", error);
+            }
+    
+            const unitID = localStorage.getItem('unitID');
+            const unitIDDisplay = document.getElementById('unitIDDisplay');
+            unitIDDisplay.textContent = unitID ? `Unit ID: ${unitID}` : 'No Unit ID';
+        });
+    
+        const vehicleRegistrationBtn = document.getElementById('vehicleRegistrationBtn');
+        const visitorRegistrationBtn = document.getElementById('visitorRegistrationBtn');
+        const visitorFormContainer = document.getElementById('visitorFormContainer');
+        const visitorForm = document.getElementById('visitorForm');
+        const successMessage = document.getElementById('successMessage');
+        const modal = document.getElementById("visitorModal");
+        const closeModal = document.getElementsByClassName("close")[0];
+    
+        vehicleRegistrationBtn.addEventListener('click', function() {
+            visitorFormContainer.style.display = 'block';
+            document.getElementById('vehicleNumberContainer').style.display = 'block';
+        });
+    
+        visitorRegistrationBtn.addEventListener('click', function() {
+            visitorFormContainer.style.display = 'block';
+            document.getElementById('vehicleNumberContainer').style.display = 'none';
+        });
+    
+        // Function to format date from yyyy-mm-dd to dd/mm/yyyy
+        function formatDateToDDMMYYYY(dateString) {
+            const [year, month, day] = dateString.split('-');
+            return `${day}/${month}/${year}`;
+        }
+    
+        visitorForm.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const category = document.getElementById('category').value;
+            const fullName = document.getElementById('fullName').value;
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const idCardNumber = document.getElementById('idCardNumber').value;
+            const vehicleNumber = document.getElementById('vehicleNumber').value || null;
+            const remarks = document.getElementById('remarks').value;
+            const visitDateInput = document.getElementById('visitDate').value;
+            const visitDate = formatDateToDDMMYYYY(visitDateInput);
+            const overnightParking = document.getElementById('overnightParking').checked;
+            const overnightParkingDays = overnightParking ? document.getElementById('overnightParkingDays').value : 0;
+            const status = overnightParking ? 'pending' : 'approved';
+    
+            const visitorRef = ref(db, 'visitors');
+            const visitorQuery = query(visitorRef, orderByKey(), limitToLast(1));
+            try {
+                const snapshot = await get(visitorQuery);
+                const lastVisitorID = snapshot.exists() ? Object.keys(snapshot.val())[0] : 'V0000';
+                const newVisitorID = 'V' + String(parseInt(lastVisitorID.substring(1)) + 1).padStart(4, '0');
+    
+                const unitID = localStorage.getItem('unitID') || 'N/A';
+    
+                await set(ref(db, `visitors/${newVisitorID}`), {
+                    visitorID: newVisitorID,
+                    category: category,
+                    fullName: fullName,
+                    phoneNumber: phoneNumber,
+                    idCardNumber: idCardNumber,
+                    vehicleNumber: vehicleNumber,
+                    remarks: remarks,
+                    visitDate: visitDate,
+                    unitID: unitID,
+                    overnightParking: overnightParking,
+                    overnightParkingDays: overnightParkingDays, // Save the overnightParkingDays value
+                    status: status
+                });
+    
+                generateQRCode(newVisitorID);
+    
+                successMessage.style.display = 'block';
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                }, 3000);
+    
+                modal.style.display = "block";
+                const visitorDetailsDiv = document.getElementById('visitorDetails');
+                visitorDetailsDiv.innerHTML = `
+                    <p><strong>Category:</strong> ${category}</p>
+                    <p><strong>Full Name:</strong> ${fullName}</p>
+                    <p><strong>Phone Number:</strong> ${phoneNumber}</p>
+                    <p><strong>ID Card Number:</strong> ${idCardNumber}</p>
+                    ${vehicleNumber ? `<p><strong>Vehicle Number:</strong> ${vehicleNumber}</p>` : ''}
+                    <p><strong>Remarks:</strong> ${remarks}</p>
+                    <p><strong>Visit Date:</strong> ${visitDate}</p>
+                    <p><strong>Unit ID:</strong> ${unitID}</p>
+                    ${overnightParking ? `<p><strong>Overnight Parking Days:</strong> ${overnightParkingDays}</p>` : ''}
+                `;
+    
+                visitorForm.reset();
+                visitorFormContainer.style.display = 'none';
+            } catch (error) {
+                console.error("Error saving visitor details:", error);
+            }
+        });  
+    
+        function generateQRCode(visitorID) {
+            const qrCodeElement = document.getElementById('qrcode');
+            qrCodeElement.innerHTML = '';
+            $(qrCodeElement).qrcode({
+                text: visitorID,
+                width: 128,
+                height: 128
+            });
+        }
+    
+        function resetForm() {
+            visitorForm.reset();
+            visitorFormContainer.style.display = 'none';
+        }
+    
+        closeModal.onclick = function() {
+            modal.style.display = "none";
+        }
+    
+        window.onclick = function(event) {
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        }
+    
+        const overnightParkingCheckbox = document.getElementById('overnightParking');
+        const overnightParkingDaysContainer = document.getElementById('overnightParkingDaysContainer');
+    
+        overnightParkingCheckbox.addEventListener('change', function() {
+            if (overnightParkingCheckbox.checked) {
+                overnightParkingDaysContainer.style.display = 'block';
+            } else {
+                overnightParkingDaysContainer.style.display = 'none';
+            }
+        });
+    </script>
+    
+</body>
+</html>

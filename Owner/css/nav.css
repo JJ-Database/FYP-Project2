@@ -1,0 +1,217 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    height: 100vh;
+}
+
+/* Left Navigation */
+.left-nav {
+    width: 200px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background-color: grey;
+    color: white;
+    padding-top: 0px;
+    border-right: grey 2px solid;
+}
+
+.left-nav a {
+    padding: 10px 15px;
+    text-decoration: none;
+    font-size: 18px;
+    color: white;
+    display: block;
+}
+.left-nav a:hover{
+    background-color: red;
+}
+
+/* Dropdown Button CSS */
+.dropdown-btn {
+    padding: 10px 15px;
+    font-size: 18px;
+    color: white;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    outline: none;
+}
+
+.dropdown-btn:hover {
+    background-color: black;
+}
+
+.dropdown-container {
+    display: none;
+    /* background-color: #f1f1f1; */
+    background-color: white;
+    padding-left: 20px;
+}
+
+.dropdown-container a {
+    font-size: 16px;
+    color: white;
+}
+
+.dropdown-container.show {
+    background-color: black; /* Change background color when shown */
+}
+
+
+/* CSS for logo and text alignment */
+.logo-link {
+    display: flex;
+    align-items: center; /* Align items vertically */
+    padding: 10px 15px;
+    text-decoration: none;
+    font-size: 18px;
+    color: #333;
+    height: 50px;
+}
+
+.logo-img {
+    width: 100px; /* Adjust as needed */
+    height: 50px; /* Adjust as needed */
+    margin-right: 10px; /* Space between image and text */
+}
+
+.logo-txt {
+    margin-left: 10px; /* Space between image and text */
+    font-size: 18px;
+    line-height: 0px; /* Match the height of the image for vertical alignment */
+}
+
+
+/* Top Navigation */
+.top-nav {
+    background-color: black;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1em;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 70px;
+    position: fixed;
+    top: 0;
+    left: 200px; /* Position it next to the left nav */
+    right: 0;
+    z-index: 1;
+}
+
+.top-nav .website-name {
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.top-nav .username {
+    margin-right: 30px; /* Margin between username and account dropdown */
+    position: relative;
+}
+
+.top-nav .username button {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    padding: 0;
+    transition: color 0.3s ease; /* Smooth transition */
+}
+
+.top-nav .username button:focus {
+    outline: none; /* Remove default focus outline */
+}
+
+.top-nav .username .dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: black; /* Changed to black */
+    color: white; /* Text color in dropdown */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 1em;
+    z-index: 1000;
+    width: 150px;
+}
+
+.top-nav .username .dropdown a {
+    display: block;
+    padding: 0.5em 1em;
+    text-decoration: none;
+    color: white; /* Text color in dropdown */
+    transition: background-color 0.3s ease; /* Smooth transition */
+}
+
+.top-nav .username .dropdown a:hover {
+    background-color: #555; /* Hover color */
+}
+
+.main-content{
+    color: black;
+}
+
+/* Username Button */
+.username {
+    position: relative; /* Make the parent element a positioning context */
+}
+
+.username:hover{
+    background-color: red;
+    padding: 20px;
+}
+
+.dropdown {
+    display: none; /* Initially hide the dropdown */
+    position: absolute; /* Position it absolutely within the username container */
+    top: 100%; /* Position it directly below the button */
+    left: 0; /* Align it to the left edge of the button */
+    background-color: #333; /* Match the background color with your design */
+    color: white;
+    border: 1px solid #555; /* Optional: Add border for better visibility */
+    z-index: 1000; /* Ensure the dropdown appears above other elements */
+    padding: 10px; /* Add some padding for better spacing */
+}
+
+.dropdown a {
+    color: white;
+    text-decoration: none;
+    display: block;
+    padding: 8px 12px;
+}
+
+.dropdown a:hover {
+    background-color: #575757; /* Highlight on hover */
+}
+
+/* Top Nav make it in a same row */
+/* Top Navigation Bar
+.top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #333;
+    color: white;
+}
+
+.username {
+    display: flex;
+    align-items: center;
+}
+
+.unit-id {
+    margin-left: 15px; 
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.username {
+    position: relative; 
+} */

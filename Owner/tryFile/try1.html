@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Resident Management System</title>
+    <script src="js/script.js"></script>
+    <script type="module" src="js/sideNav.js"></script>
+    <link rel="stylesheet" href="css/nav.css">
+    <link rel="stylesheet" href="css/reserveFacility.css">
+    
+    <style>
+        .available {
+            background-color: green;
+        }
+        .unavailable {
+            background-color: red;
+        }
+        .disabled {
+            color: #ccc;
+            background-color: #f5f5f5;
+        }
+        #facilityInfo {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        /* Modal styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto; /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* Could be more or less, depending on screen size */
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <!-- Left Navigation Bar -->
+    <div class="left-nav">
+        <a href="dashboard.html" class="logo-link">
+            <img src="../img/Synergy_transparent.png" alt="Synergy Logo" class="logo-img">
+        </a>
+        <button class="dropdown-btn">Payment</button>
+        <div class="dropdown-container">
+            <a href="paymentList.html">Manage Payment</a>
+            <a href="paypal.html">Payment</a>
+        </div>
+        <button class="dropdown-btn">Facility</button>
+        <div class="dropdown-container">
+            <a href="bookingFacility.html">Booking Facility</a>
+            <a href="listBookings.html">List Bookings</a>
+        </div>
+        <button class="dropdown-btn">Visitors</button>
+        <div class="dropdown-container">
+            <a href="visitorRegistration.html">Visitor Registration</a>
+            <a href="listVisitors.html">List Visitors</a>
+        </div>
+        <button class="dropdown-btn">Reports</button>
+        <div class="dropdown-container">
+            <a href="addReport.html">Add Report</a>
+            <a href="listReport.html">List Report</a>
+        </div>
+        <a href="subTenant.html">Sub Tenant</a>
+        <a href="#">Settings</a>
+    </div>
+
+    <!-- Top Navigation Bar -->
+    <div class="top-nav">
+        <div class="website-name">Smart Resident Management System</div>
+        <div class="username">
+            <button id="usernameBtn">username</button>
+            <div class="unit-id" id="unitIDDisplay"></div>
+            <div class="dropdown" id="dropdownMenu">
+                <a href="myAccount.html">My Account</a>
+                <a href="ownerLogin.html">Log Out</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <h1 class="txtWelcome">Facility Booking Availability</h1>
+        <div class="booking-form">
+            <h2>Book Facility</h2>
+            <div id="facilityInfo">
+                <p>Facility ID: <span id="facilityIDDisplay"></span></p>
+                <p>Type of Facility: <span id="typeOfFacilityDisplay"></span></p>
+            </div>
+            <form id="bookingForm">
+                <label for="date">Date:</label>
+                <input type="date" id="date" name="date" min="" required>
+
+
+                <label for="time">Time:</label>
+                <select id="time" name="time" required>
+                    <option value="">Select Time</option>
+                    <option value="10:00">10:00</option>
+                    <option value="11:00">11:00</option>
+                    <option value="12:00">12:00</option>
+                    <option value="13:00">13:00</option>
+                    <option value="14:00">14:00</option>
+                    <option value="15:00">15:00</option>
+                    <option value="16:00">16:00</option>
+                    <option value="17:00">17:00</option>
+                    <option value="18:00">18:00</option>
+                    <option value="19:00">19:00</option>
+                </select>
+
+                <label for="numberOfPax">Number of Pax:</label>
+                <input type="number" id="numberOfPax" name="numberOfPax" min="1" required>
+
+                <button type="submit">Book Now</button>
+            </form>
+        </div>
+        <div class="availability-chart">
+            <h2>Availability Chart</h2>
+            <table id="availabilityChart">
+                <!-- Availability data will be populated here -->
+            </table>
+            <div class="legend">
+                <span class="available">Available</span> 
+                <span class="unavailable">Unavailable</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for booking details and QR code -->
+    <div id="bookingModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="qrcode"></div> <!-- Container for QR code -->
+            <div id="bookingDetails"></div> <!-- Container for booking details -->
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+    import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDUrwSd3rJvJKe0gOG5E0U68ow-fPGOLPA",
+        authDomain: "loginhtml-b6a38.firebaseapp.com",
+        databaseURL: "https://loginhtml-b6a38-default-rtdb.firebaseio.com",
+        projectId: "loginhtml-b6a38",
+        storageBucket: "loginhtml-b6a38.appspot.com",
+        messagingSenderId: "888243437180",
+        appId: "1:888243437180:web:5faad9d368f11ee6b1d3f9",
+        measurementId: "G-VXJT8PMFPF"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const maxOfPax = 10;  // Adjust this value as needed
+
+    document.addEventListener('DOMContentLoaded', function() {
+        setTodayAsDefaultDate();
+        loadAvailability();
+        setMinDateForDatePicker();
+        disablePastTimeSlots();
+
+        // Display facilityID and typeOfFacility
+        const facilityIDDisplay = document.getElementById('facilityIDDisplay');
+        const typeOfFacilityDisplay = document.getElementById('typeOfFacilityDisplay');
+
+        const facilityID = localStorage.getItem('facilityID');
+        const typeOfFacility = localStorage.getItem('typeOfFacility');
+
+        if (facilityID && typeOfFacility) {
+            facilityIDDisplay.textContent = facilityID;
+            typeOfFacilityDisplay.textContent = typeOfFacility;
+        } else {
+            facilityIDDisplay.textContent = 'Not available';
+            typeOfFacilityDisplay.textContent = 'Not available';
+        }
+    });
+
+    function setTodayAsDefaultDate() {
+        const dateInput = document.getElementById('date');
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.value = today;
+        updateAvailabilityChart(today);
+    }
+
+    function setMinDateForDatePicker() {
+        const dateInput = document.getElementById('date');
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.setAttribute('min', today);
+    }
+
+    function disablePastTimeSlots() {
+        const timeSelect = document.getElementById('time');
+        const now = new Date();
+        const currentTime = `${now.getHours()}:00`;
+
+        const dateInput = document.getElementById('date');
+        dateInput.addEventListener('change', function() {
+            const selectedDate = this.value;
+            const options = timeSelect.options;
+
+            if (selectedDate === new Date().toISOString().split('T')[0]) {
+                Array.from(options).forEach(option => {
+                    const optionTime = option.value;
+                    if (optionTime <= currentTime) {
+                        option.classList.add('disabled');
+                        option.disabled = true;
+                    } else {
+                        option.classList.remove('disabled');
+                        option.disabled = false;
+                    }
+                });
+            } else {
+                // Enable all time slots if the selected date is not today
+                Array.from(options).forEach(option => {
+                    option.classList.remove('disabled');
+                    option.disabled = false;
+                });
+            }
+
+            updateAvailabilityChart(selectedDate);
+        });
+
+        // Handle case where the date is initially set to today
+        const initialDate = dateInput.value;
+        if (initialDate === new Date().toISOString().split('T')[0]) {
+            Array.from(timeSelect.options).forEach(option => {
+                const optionTime = option.value;
+                if (optionTime <= currentTime) {
+                    option.classList.add('disabled');
+                    option.disabled = true;
+                } else {
+                    option.classList.remove('disabled');
+                    option.disabled = false;
+                }
+            });
+        }
+    }
+
+    function loadAvailability() {
+        const facilityID = localStorage.getItem('facilityID');
+        const dateInput = document.getElementById('date');
+
+        dateInput.addEventListener('change', function() {
+            const selectedDate = this.value;
+            updateAvailabilityChart(selectedDate);
+        });
+    }
+
+    function updateAvailabilityChart(selectedDate) {
+        const facilityID = localStorage.getItem('facilityID');
+        const timeSelect = document.getElementById('time');
+        const chart = document.getElementById('availabilityChart');
+
+        if (facilityID) {
+            const bookingRef = ref(db, 'booking');
+
+            get(bookingRef).then((snapshot) => {
+                const bookings = snapshot.val();
+                chart.innerHTML = '';
+
+                const timeslots = [
+                    '10:00', '11:00', '12:00', '13:00', '14:00',
+                    '15:00', '16:00', '17:00', '18:00', '19:00'
+                ];
+
+                const days = Array.from({ length: 7 }, (_, i) => {
+                    const date = new Date();
+                    date.setDate(date.getDate() + i);
+                    return date.toISOString().split('T')[0];
+                });
+
+                // Create header row for time slots
+                const headerRow = document.createElement('tr');
+                const headerCell = document.createElement('th');
+                headerCell.textContent = 'Date/Time';
+                headerRow.appendChild(headerCell);
+
+                timeslots.forEach(timeslot => {
+                    const headerCell = document.createElement('th');
+                    headerCell.textContent = timeslot;
+                    headerRow.appendChild(headerCell);
+                });
+                chart.appendChild(headerRow);
+
+                // Create rows for each date
+                days.forEach(day => {
+                    const row = document.createElement('tr');
+                    const dateCell = document.createElement('td');
+                    dateCell.textContent = day;
+                    row.appendChild(dateCell);
+
+                    timeslots.forEach(timeslot => {
+                        let paxCount = 0;
+                        for (const bookingID in bookings) {
+                            const booking = bookings[bookingID];
+                            if (booking.facilityID === facilityID && booking.date === day && booking.time === timeslot) {
+                                paxCount += parseInt(booking.numberOfPax);
+                            }
+                        }
+
+                        const availabilityCell = document.createElement('td');
+                        if (paxCount >= maxOfPax) {
+                            availabilityCell.className = 'unavailable';
+                        } else {
+                            availabilityCell.className = 'available';
+                        }
+
+                        row.appendChild(availabilityCell);
+
+                        // Disable unavailable time slots in the dropdown
+                        if (day === selectedDate) {
+                            const timeOptions = Array.from(timeSelect.options);
+                            timeOptions.forEach(option => {
+                                if (option.value === timeslot) {
+                                    if (paxCount >= maxOfPax) {
+                                        option.classList.add('disabled');
+                                        option.disabled = true;
+                                    } else {
+                                        option.classList.remove('disabled');
+                                        option.disabled = false;
+                                    }
+                                }
+                            });
+                        }
+                    });
+
+                    chart.appendChild(row);
+                });
+            }).catch((error) => {
+                console.error(error);
+            });
+        }
+    }
+
+    const bookingForm = document.getElementById('bookingForm');
+    bookingForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const facilityID = localStorage.getItem('facilityID');
+        const typeOfFacility = localStorage.getItem('typeOfFacility');
+        const date = document.getElementById('date').value;
+        const numberOfPax = document.getElementById('numberOfPax').value;
+        const time = document.getElementById('time').value;
+        const unitID = localStorage.getItem('unitID');
+
+        if (date && time && numberOfPax) {
+            const pax = parseInt(numberOfPax);
+            if (pax > maxOfPax) {
+                alert(`Number of Pax cannot exceed ${maxOfPax}`);
+                return;
+            }
+
+            const bookingRef = ref(db, 'booking');
+            get(bookingRef).then((snapshot) => {
+                const bookingData = snapshot.val();
+                let nextBookingID = 1;
+
+                if (bookingData) {
+                    const bookingIDs = Object.keys(bookingData);
+                    const lastBookingID = Math.max(...bookingIDs.map(id => parseInt(id.replace('BK', ''))));
+                    nextBookingID = lastBookingID + 1;
+                }
+
+                const newBookingID = `BK${String(nextBookingID).padStart(4, '0')}`;
+                set(ref(db, `booking/${newBookingID}`), {
+                    bookingID: newBookingID,
+                    facilityID: facilityID,
+                    typeOfFacility: typeOfFacility,
+                    date: date,
+                    numberOfPax: numberOfPax,
+                    time: time,
+                    unitID: unitID
+                }).then(() => {
+                    showModal(newBookingID, facilityID, typeOfFacility, date, numberOfPax, time, unitID);
+                }).catch((error) => {
+                    console.error(error);
+                });
+            });
+        } else {
+            alert("Please fill in all fields before submitting.");
+        }
+    });
+
+    function showModal(bookingID, facilityID, typeOfFacility, date, numberOfPax, time, unitID) {
+        const modal = document.getElementById('bookingModal');
+        const qrcodeContainer = document.getElementById('qrcode');
+        const bookingDetailsContainer = document.getElementById('bookingDetails');
+        const bookingURL = `http://example.com/booking/${bookingID}`;
+
+        qrcodeContainer.innerHTML = '';
+        $(qrcodeContainer).qrcode({
+            text: bookingURL,
+            width: 128,
+            height: 128
+        });
+
+        bookingDetailsContainer.innerHTML = `
+            <p>Booking ID: ${bookingID}</p>
+            <p>Facility ID: ${facilityID}</p>
+            <p>Type of Facility: ${typeOfFacility}</p>
+            <p>Date: ${date}</p>
+            <p>Number of Pax: ${numberOfPax}</p>
+            <p>Time: ${time}</p>
+            <p>Unit ID: ${unitID}</p>
+        `;
+
+        modal.style.display = 'block';
+        // Refresh the page after showing the modal
+        setTimeout(() => {
+            location.reload();
+        }, 2000); // Adjust the delay if needed
+
+        const closeBtn = modal.querySelector('.close');
+        closeBtn.onclick = function() {
+            modal.style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    }
+</script>
+
+
+</body>
+</html>

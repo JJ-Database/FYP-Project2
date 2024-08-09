@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="js/script.js"></script>
+    <script type="module" src="js/sideNav.js"></script>
+    <link rel="stylesheet" href="css/nav.css">
+    <link rel="stylesheet" href="css/vehicleRegistration.css">
+    <link rel="stylesheet" href="../css/addNewBulletIn.css">
+    <title>Modify Vehicle - Smart Resident Management System</title>
+    <style>
+        /* Add any additional styles here */
+    </style>
+</head>
+<body>
+   <!-- Left Navigation Bar -->
+   <div class="left-nav">
+    <a href="dashboard.html" class="logo-link">
+        <img src="../img/Synergy_transparent.png" alt="Synergy Logo" class="logo-img">
+    </a>
+    <button class="dropdown-btn">Payment</button>
+    <div class="dropdown-container">
+        <a href="paymentReceipt.html">Manage Payment</a>
+    </div>
+    <button class="dropdown-btn">Facility</button>
+    <div class="dropdown-container">
+        <a href="bookingFacility.html">Booking Facility</a>
+        <a href="listBookings.html">List Bookings</a>
+    </div>
+    <button class="dropdown-btn">Visitors</button>
+    <div class="dropdown-container">
+        <a href="visitorRegistration.html">Visitor Registration</a>
+        <a href="listVisitors.html">List Visitors</a>
+    </div>
+    <button class="dropdown-btn">Complaint</button>
+    <div class="dropdown-container">
+        <a href="addReport.html">Add Complaint</a>
+        <a href="listReport.html">List Complaint</a>
+    </div>
+    <button class="dropdown-btn">Vehicle</button>
+    <div class="dropdown-container">
+        <a href="vehicleInterface.html">Add Vehicle</a>
+        <a href="listVehicles.html">List Vehicle</a>
+    </div>
+    <a href="findMyHouse.html">Find My House</a>
+    <a href="subTenant.html">Sub Tenant</a>
+</div>
+
+    <!-- Top Navigation Bar -->
+    <div class="top-nav">
+        <div class="website-name">Smart Resident Management System</div>
+        <div class="username">
+            <button id="usernameBtn">username</button>
+            <div class="unit-id" id="unitIDDisplay"></div>
+            <div class="dropdown" id="dropdownMenu">
+                <a href="myAccount.html">My Account</a>
+                <a href="ownerLogin.html">Log Out</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <h1 class="txtWelcome">Modify Vehicle</h1>
+
+        <div class="form-container" id="vehicleFormContainer">
+            <form id="modifyVehicleForm">
+                <label for="vehicleID">Vehicle ID</label>
+                <input type="text" id="vehicleID" name="vehicleID" readonly>
+
+                <label for="unitID">Unit ID</label>
+                <input type="text" id="unitID" name="unitID" readonly>
+
+                <label for="brand">Brand</label>
+                <select id="brand" name="brand" required>
+                    <option value="">Select Brand</option>
+                    <option value="Perodua">Perodua</option>
+                    <option value="Proton">Proton</option>
+                    <option value="Toyota">Toyota</option>
+                    <option value="Honda">Honda</option>
+                    <option value="Mercedez Benz">Mercedez Benz</option>
+                    <option value="BMW">BMW</option>
+                    <option value="Other">Other</option>
+                </select>
+
+                <label for="carParkLots">Car Park Lots (001-200)</label>
+                <input type="text" id="carParkLots" name="carParkLots" placeholder="e.g., 001" required pattern="\d{3}">
+
+                <label for="carPlateNumber">Car Plate Number</label>
+                <input type="text" id="carPlateNumber" name="carPlateNumber" placeholder="e.g., ABC1234" required pattern="[A-Za-z0-9]+" maxlength="10">
+
+                <label for="color">Color</label>
+                <input type="text" id="color" name="color" placeholder="e.g., Blue" required pattern="[A-Za-z]+" maxlength="15">
+
+                <label for="model">Model</label>
+                <input type="text" id="model" name="model" placeholder="e.g., Civic" required>
+
+                <label for="type">Type</label>
+                <select id="type" name="type" required>
+                    <option value="">Select Type</option>
+                    <option value="MPV">MPV</option>
+                    <option value="SUV">SUV</option>
+                    <option value="Sedan">Sedan</option>
+                    <option value="Hatchback">Hatchback</option>
+                    <option value="Coupe">Coupe</option>
+                    <option value="Other">Other</option>
+                </select>
+
+                <div>
+                    <button type="submit">Update Vehicle</button>
+                </div>
+            </form>
+        </div>
+        <div class="success-message" id="successMessage">Vehicle updated successfully!</div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+        import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDUrwSd3rJvJKe0gOG5E0U68ow-fPGOLPA",
+            authDomain: "loginhtml-b6a38.firebaseapp.com",
+            databaseURL: "https://loginhtml-b6a38-default-rtdb.firebaseio.com",
+            projectId: "loginhtml-b6a38",
+            storageBucket: "loginhtml-b6a38.appspot.com",
+            messagingSenderId: "888243437180",
+            appId: "1:888243437180:web:5faad9d368f11ee6b1d3f9",
+            measurementId: "G-VXJT8PMFPF"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Get vehicleID from query parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            const vehicleID = urlParams.get('vehicleID');
+
+            // Fetch vehicle details based on vehicleID
+            if (vehicleID) {
+                const vehicleRef = ref(db, 'vehicles/' + vehicleID);
+                const vehicleSnapshot = await get(vehicleRef);
+                if (vehicleSnapshot.exists()) {
+                    const vehicle = vehicleSnapshot.val();
+                    document.getElementById('vehicleID').value = vehicle.vehicleID;
+                    document.getElementById('unitID').value = vehicle.unitID; // Ensure unitID is populated
+                    document.getElementById('brand').value = vehicle.brand;
+                    document.getElementById('carParkLots').value = vehicle.carParkLots;
+                    document.getElementById('carPlateNumber').value = vehicle.carPlateNumber;
+                    document.getElementById('color').value = vehicle.color;
+                    document.getElementById('model').value = vehicle.model;
+                    document.getElementById('type').value = vehicle.type;
+                } else {
+                    alert("Vehicle not found.");
+                    window.location.href = 'listVehicles.html';
+                }
+            }
+        });
+
+        document.getElementById('modifyVehicleForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const form = event.target;
+            const vehicleID = document.getElementById('vehicleID').value;
+            const unitID = document.getElementById('unitID').value;
+
+            const updatedVehicleData = {
+                vehicleID: vehicleID,
+                unitID: unitID,
+                brand: form.brand.value,
+                carParkLots: form.carParkLots.value,
+                carPlateNumber: form.carPlateNumber.value,
+                color: form.color.value,
+                model: form.model.value,
+                timestamp: getFormattedDate(new Date()),
+                type: form.type.value
+            };
+
+            const vehicleRef = ref(db, 'vehicles/' + vehicleID);
+            set(vehicleRef, updatedVehicleData)
+                .then(() => {
+                    document.getElementById('successMessage').style.display = 'block';
+                    setTimeout(() => {
+                        document.getElementById('successMessage').style.display = 'none';
+                    }, 3000);
+                    alert("Vehicle Update Successful!");
+                    form.reset();
+                    window.location.href = 'listVehicles.html';
+                })
+                .catch((error) => {
+                    console.error("Error updating vehicle: ", error);
+                });
+        });
+
+        // Convert car plate number to uppercase on input
+        document.getElementById('carPlateNumber').addEventListener('input', function(event) {
+            event.target.value = event.target.value.toUpperCase();
+        });
+
+        function getFormattedDate(date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+    </script>
+</body>
+</html>

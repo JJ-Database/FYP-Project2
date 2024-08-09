@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            height: 100vh;
+            background-color: black;
+            color: white;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+        }
+
+        .left-side {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .side-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .right-side {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative; /* Needed for absolute positioning of the button */
+
+        }
+
+        header {
+            height: 70px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0px;
+            width: 100%;
+            background-color: white;
+            color: black;
+        }
+
+        .logo {
+            margin: 0 180px;
+            height: 50px;
+            width: 100px;
+        }
+
+        .form-container {
+            padding-top: 20px;
+            padding-bottom: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            width: 100%;
+            max-width: 500px;
+            margin: 0 80px;
+            overflow: hidden;
+            flex-grow: 1;
+            position: relative; /* Needed for absolute positioning of the button */
+
+        }
+
+        .fixed-header {
+            position: sticky;
+            top: 0;
+            background-color: black;
+            padding: 0px 0;
+            text-align: left;
+        }
+
+        .scrollable-content {
+            overflow-y: auto;
+            max-height: calc(100vh - 200px);
+        }
+
+        h2 {
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 5px;
+            margin-top: 10px;
+        }
+
+        input, select {
+            margin-bottom: 15px;
+            padding: 8px;
+            font-size: 16px;
+            width: 80%;
+        }
+
+        .rememberMeContainer {
+            margin-bottom: 15px;
+            padding: 8px;
+            font-size: 16px;
+            width: 80%;
+        }
+
+        #rememberMe {
+            margin-left: 0px;
+            display: block;
+            align-items: left;
+            text-align: left;
+            margin-bottom: 15px;
+            margin-left: 0px;
+        }
+
+        button {
+            padding: 10px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 80%;
+            max-width: 100%;
+            align-self: flex-start;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .link-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .link-container a {
+            color: white;
+            text-decoration: none;
+        }
+        span {
+            color: red;
+            text-decoration: underline;
+        }
+        .back-button {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .back-button img {
+            width: 40px; /* Adjust the size as needed */
+            height: auto;
+        }
+        #forgotPasswordLink{
+            color: red;
+            padding: 10px 0px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left-side">
+            <img src="../img/condo.jpg" alt="Image" class="side-image">
+        </div>
+        <div class="right-side">
+            <header>
+                <img src="../img/Synergy_transparent.png" alt="Synergy Logo" class="logo">
+            </header>   
+            <div class="form-container">
+                <!-- Back Button -->
+                <button class="back-button" onclick="window.location.href='../rolesSelected.html'">
+                    <img src="../img/undo.png" alt="Back">
+                </button>
+                <div class="fixed-header">
+                    <h2>Owner Login</h2>
+                    <p>Not a owner yet? <a href="tel:01155512188">Call Us</a>  <a href="mailto:chewchunthoe2003@gmail.com">Email Us</a>
+                    </div>
+                <div class="scrollable-content">
+                    <form id="loginForm">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="Enter your email" required>
+
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+
+                        <div class="rememberMeContainer">
+                            <input type="checkbox" id="rememberMe"> Remember me!
+                        </div>
+
+                        <a href="#" id="forgotPasswordLink">Forgot Password?</a>
+
+                        <button type="submit">Login</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
+        import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-auth.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyDUrwSd3rJvJKe0gOG5E0U68ow-fPGOLPA",
+            authDomain: "loginhtml-b6a38.firebaseapp.com",
+            databaseURL: "https://loginhtml-b6a38-default-rtdb.firebaseio.com",
+            projectId: "loginhtml-b6a38",
+            storageBucket: "loginhtml-b6a38.appspot.com",
+            messagingSenderId: "888243437180",
+            appId: "1:888243437180:web:5faad9d368f11ee6b1d3f9",
+            measurementId: "G-VXJT8PMFPF"
+        };
+    
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+    
+        const storedEmail = localStorage.getItem('email');
+        const storedPassword = localStorage.getItem('password');
+        const storedUserId = localStorage.getItem('userID');
+    
+        if (storedEmail && storedPassword) {
+            document.getElementById('email').value = storedEmail;
+            document.getElementById('password').value = storedPassword;
+            document.getElementById('rememberMe').checked = true;
+        }
+    
+        document.getElementById("loginForm").addEventListener('submit', async function(e) {
+            e.preventDefault();
+    
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+    
+            try {
+                // Sign in with Firebase Authentication
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+    
+                // Retrieve all owner records from Firebase Realtime Database
+                const ownersRef = ref(db, 'owners');
+                const snapshot = await get(ownersRef);
+    
+                if (snapshot.exists()) {
+                    const ownersData = snapshot.val();
+                    let userFound = false;
+    
+                    // Iterate over all owners to find a matching emailAddress
+                    for (const [key, owner] of Object.entries(ownersData)) {
+                        if (owner.emailAddress === email) {
+                            // Store user data in local storage
+                            localStorage.setItem('emailAddress', owner.emailAddress);
+                            localStorage.setItem('fullName', owner.fullName);
+                            localStorage.setItem('ownerID', owner.ownerID);
+                            localStorage.setItem('unitID', owner.unitID);
+    
+                            // Remember user credentials if checkbox is checked
+                            if (document.getElementById('rememberMe').checked) {
+                                localStorage.setItem('email', email);
+                                localStorage.setItem('password', password);
+                                localStorage.setItem('userID', user.uid);
+                            } else {
+                                localStorage.removeItem('email');
+                                localStorage.removeItem('password');
+                                localStorage.removeItem('userID');
+                            }
+    
+                            // Redirect to dashboard
+                            window.location.href = "dashboard.html";
+                            userFound = true;
+                            break;
+                        }
+                    }
+    
+                    if (!userFound) {
+                        alert("Login failed: Email address does not match.");
+                    }
+                } else {
+                    alert("Login failed: No owner records found.");
+                }
+            } catch (error) {
+                const errorMessage = error.message || "An unknown error occurred.";
+                alert(`Login failed: ${errorMessage}`);
+            }
+        });
+    
+        document.getElementById("forgotPasswordLink").addEventListener('click', async function(e) {
+            e.preventDefault();
+            const email = prompt("Please enter your email address:");
+            if (email) {
+                try {
+                    await sendPasswordResetEmail(auth, email);
+                    alert("Password reset email sent. Please check your inbox.");
+                } catch (error) {
+                    alert("Failed to send password reset email. Please try again.");
+                    console.error("Error sending password reset email:", error);
+                }
+            }
+        });
+    </script>
+    
+    
+    
+</body>
+</html>

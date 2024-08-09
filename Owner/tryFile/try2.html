@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Bulletin</title>
+    <style>
+        #imagePreview {
+            display: none;
+            margin-top: 10px;
+        }
+        #imagePreview img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Add New Bulletin</h1>
+
+    <form id="addBulletinForm">
+        <label for="category">Category</label>
+        <select id="category" name="category" required>
+            <option value="">Select Category</option>
+            <option value="aa">Select Category</option>
+            <!-- Add category options here -->
+        </select>
+
+        <label for="title">Title</label>
+        <input type="text" id="title" name="title" placeholder="Bulletin title.." required>
+
+        <label for="remarks">Remarks</label>
+        <input type="text" id="remarks" name="remarks" placeholder="Any remarks..">
+
+        <label for="date">Date</label>
+        <input type="text" id="date" name="date" placeholder="dd/mm/yyyy" required readonly>
+
+        <label for="messageBody">Message Body</label>
+        <textarea id="messageBody" name="messageBody"></textarea>
+
+        <label for="attachment">Attachment</label>
+        <input type="file" id="attachment" name="attachment" accept="image/*">
+        
+        <div id="imagePreview">
+            <img id="previewImage" src="" alt="Image Preview">
+        </div>
+
+        <button type="submit">Save Changes</button>
+    </form>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+        import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-storage.js";
+        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDUrwSd3rJvJKe0gOG5E0U68ow-fPGOLPA",
+            authDomain: "loginhtml-b6a38.firebaseapp.com",
+            databaseURL: "https://loginhtml-b6a38-default-rtdb.firebaseio.com",
+            projectId: "loginhtml-b6a38",
+            storageBucket: "loginhtml-b6a38.appspot.com",
+            messagingSenderId: "888243437180",
+            appId: "1:888243437180:web:5faad9d368f11ee6b1d3f9",
+            measurementId: "G-VXJT8PMFPF"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const storage = getStorage(app);
+
+        document.getElementById('attachment').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const preview = document.getElementById('imagePreview');
+                const previewImage = document.getElementById('previewImage');
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    previewImage.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+
+                reader.readAsDataURL(file);
+            } else {
+                document.getElementById('imagePreview').style.display = 'none';
+            }
+        });
+
+        document.getElementById('addBulletinForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const fileInput = document.getElementById('attachment');
+            const file = fileInput.files[0];
+            const categoryName = form.category.value;
+            const dateValue = form.date.value;
+            const title = form.title.value;
+            const remarks = form.remarks.value;
+            const messageBody = form.messageBody.value;
+
+            try {
+                let attachmentUrl = '';
+
+                if (file) {
+                    const storagePath = `bulletIn/${file.name}`;
+                    const fileRef = storageRef(storage, storagePath);
+                    await uploadBytes(fileRef, file);
+                    attachmentUrl = await getDownloadURL(fileRef);
+                }
+
+                const newBulletID = 'B' + Date.now();  // Use a timestamp or any other method to generate unique ID
+                const newBulletinData = {
+                    bulletID: newBulletID,
+                    category: categoryName,
+                    title: title,
+                    remarks: remarks,
+                    messageBody: messageBody,
+                    date: dateValue,
+                    attachment: attachmentUrl
+                };
+
+                await set(ref(db, 'bulletins/' + newBulletID), newBulletinData);
+                alert('Bulletin added successfully!');
+                form.reset();
+                document.getElementById('imagePreview').style.display = 'none';
+            } catch (error) {
+                console.error('Error adding bulletin:', error);
+                alert('Error adding bulletin: ' + error.message);
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date();
+            const day = String(today.getDate()).padStart(2, '0');
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const year = today.getFullYear();
+            const formattedDate = `${day}/${month}/${year}`;
+            document.getElementById('date').value = formattedDate;
+        });
+    </script>
+</body>
+</html>

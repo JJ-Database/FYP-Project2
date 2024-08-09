@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/visitorManagement.css">
+    <link rel="stylesheet" href="css/nav.css">
+    <script type="module" src="../js/sideNav.js"></script>
+    <script type="module" src="js/script.js"></script>
+    <title>Smart Resident Management System</title>
+    <style>
+        .main-content {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            background: url('../img/carRegistration.png') no-repeat center center/cover;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 20px;
+        }
+
+        .content-container {
+            width: 100%;
+            height: 40%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 50px;
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .content-container .description {
+            width: 60%;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .content-container button {
+            width: 30%;
+            padding: 15px 25px;
+            font-size: 20px;
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .content-container button:hover {
+            background-color: green;
+        }
+    </style>
+</head>
+<body>
+
+   <!-- Left Navigation Bar -->
+   <div class="left-nav">
+    <a href="dashboard.html" class="logo-link">
+        <img src="../img/Synergy_transparent.png" alt="Synergy Logo" class="logo-img">
+    </a>
+    <button class="dropdown-btn">Payment</button>
+    <div class="dropdown-container">
+        <a href="paymentReceipt.html">Manage Payment</a>
+    </div>
+    <button class="dropdown-btn">Facility</button>
+    <div class="dropdown-container">
+        <a href="bookingFacility.html">Booking Facility</a>
+        <a href="listBookings.html">List Bookings</a>
+    </div>
+    <button class="dropdown-btn">Visitors</button>
+    <div class="dropdown-container">
+        <a href="visitorRegistration.html">Visitor Registration</a>
+        <a href="listVisitors.html">List Visitors</a>
+    </div>
+    <button class="dropdown-btn">Complaint</button>
+    <div class="dropdown-container">
+        <a href="addReport.html">Add Complaint</a>
+        <a href="listReport.html">List Complaint</a>
+    </div>
+    <button class="dropdown-btn">Vehicle</button>
+    <div class="dropdown-container">
+        <a href="vehicleInterface.html">Add Vehicle</a>
+        <a href="listVehicles.html">List Vehicle</a>
+    </div>
+    <a href="findMyHouse.html">Find My House</a>
+    <a href="subTenant.html">Sub Tenant</a>
+</div>
+    <!-- Top Navigation Bar -->
+    <div class="top-nav">
+        <div class="website-name">Smart Resident Management System</div>
+        <div class="username">
+            <button id="usernameBtn">username</button>
+            <div class="unit-id" id="unitIDDisplay"></div>
+            <div class="dropdown" id="dropdownMenu">
+                <a href="myAccount.html">My Account</a>
+                <a href="ownerLogin.html">Log Out</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <div class="content-container">
+            <div class="description">
+                <p>To register a vehicle's number plate for OCR-based cardless, contactless entry:</p>
+                <ol>
+                    <li>Obtain the necessary registration form from the relevant authority.</li>
+                    <li>Provide details of the vehicle, including the license plate number.</li>
+                    <li>The vehicle number is connected to your unit number for authorised entry.</li>
+                </ol>
+                <p>Reminder: One unit only allows two car parking lots.</p>
+            </div>
+            <button onclick="window.location.href='vehicleRegistration.html'">Register Vehicle</button>
+        </div>
+    </div>
+
+</body>
+</html>

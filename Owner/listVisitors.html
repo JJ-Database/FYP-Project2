@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Resident Management System</title>
+    <script src="js/script.js"></script>
+    <script type="module" src="js/sideNav.js"></script>
+    <link rel="stylesheet" href="css/nav.css">
+    <link rel="stylesheet" href="css/reserveFacility.css">
+    
+    <style>
+        .available {
+            background-color: green;
+        }
+        .unavailable {
+            background-color: red;
+        }
+        .disabled {
+            color: #ccc;
+            background-color: #f5f5f5;
+        }
+        #facilityInfo {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        /* Modal styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto; /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* Could be more or less, depending on screen size */
+            display: flex; /* Flexbox layout for side-by-side elements */
+        }
+
+        .modal-content > div {
+            flex: 1; /* Equal width for each section */
+            padding: 10px;
+        }
+
+        #qrcode-container {
+            text-align: center; /* Center content horizontally */
+        }
+
+        #visitorDetails {
+            border-left: 2px solid #ddd; /* Border between QR code and details */
+        }
+
+        #qrcode-container p {
+            margin: 0 0 10px 0; /* Space between text and QR code */
+            font-weight: bold;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Visitor List styles */
+        .visitor-list {
+            font-size: 16px;
+            margin: 20px;
+        }
+        .visitor-list table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .visitor-list th, .visitor-list td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .visitor-list th {
+            background-color: #f2f2f2;
+        }
+        .details-btn {
+            cursor: pointer;
+            color: blue;
+            text-decoration: underline;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto; /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* Could be more or less, depending on screen size */
+            display: flex; /* Flexbox layout for side-by-side elements */
+            position: relative; /* Ensure the close button is positioned correctly */
+        }
+
+        .modal-content > div {
+            flex: 1; /* Equal width for each section */
+            padding: 10px;
+        }
+
+        #qrcode-container {
+            text-align: center; /* Center content horizontally */
+        }
+
+        #visitorDetails {
+            border-left: 2px solid #ddd; /* Border between QR code and details */
+        }
+
+        #qrcode-container p {
+            margin: 0 0 10px 0; /* Space between text and QR code */
+            font-weight: bold;
+        }
+
+        .close {
+            color: #aaa;
+            position: absolute; /* Position the close button in the top-right corner */
+            top: 10px;
+            right: 10px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+        }
+        /* Status background colors */
+        .status-approved {
+            background-color: green;
+            color: white;
+        }
+
+        .status-rejected {
+            background-color: red;
+            color: white;
+        }
+
+        .status-pending {
+            background-color: red;
+            color: white;
+            animation: blink 3s linear infinite;        
+        }
+
+    </style>
+</head>
+<body>
+   <!-- Left Navigation Bar -->
+   <div class="left-nav">
+    <a href="dashboard.html" class="logo-link">
+        <img src="../img/Synergy_transparent.png" alt="Synergy Logo" class="logo-img">
+    </a>
+    <button class="dropdown-btn">Payment</button>
+    <div class="dropdown-container">
+        <a href="paymentReceipt.html">Manage Payment</a>
+    </div>
+    <button class="dropdown-btn">Facility</button>
+    <div class="dropdown-container">
+        <a href="bookingFacility.html">Booking Facility</a>
+        <a href="listBookings.html">List Bookings</a>
+    </div>
+    <button class="dropdown-btn">Visitors</button>
+    <div class="dropdown-container">
+        <a href="visitorRegistration.html">Visitor Registration</a>
+        <a href="listVisitors.html">List Visitors</a>
+    </div>
+    <button class="dropdown-btn">Complaint</button>
+    <div class="dropdown-container">
+        <a href="addReport.html">Add Complaint</a>
+        <a href="listReport.html">List Complaint</a>
+    </div>
+    <button class="dropdown-btn">Vehicle</button>
+    <div class="dropdown-container">
+        <a href="vehicleInterface.html">Add Vehicle</a>
+        <a href="listVehicles.html">List Vehicle</a>
+    </div>
+    <a href="findMyHouse.html">Find My House</a>
+    <a href="subTenant.html">Sub Tenant</a>
+</div>
+    <!-- Top Navigation Bar -->
+    <div class="top-nav">
+        <div class="website-name">Smart Resident Management System</div>
+        <div class="username">
+            <button id="usernameBtn">username</button>
+            <div class="unit-id" id="unitIDDisplay"></div>
+            <div class="dropdown" id="dropdownMenu">
+                <a href="myAccount.html">My Account</a>
+                <a href="ownerLogin.html">Log Out</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <h1 class="txtWelcome">List of Visitors</h1>
+        <div class="filters">
+            <label for="filterDate">Visit Date:</label>
+            <input type="date" id="filterDate">
+            <select id="filterStatus">
+                <option value="all">All Status</option>
+                <option value="approved">Approved</option>
+                <option value="pending">Pending</option>
+                <option value="rejected">Rejected</option>
+            </select>
+            <button id="applyFilters">Apply Filters</button>
+        </div>
+        <div class="visitor-list">
+            <table id="visitorList">
+                <thead>
+                    <tr>
+                        <th>Visitor ID</th>
+                        <th>Full Name</th>
+                        <th>Phone Number</th>
+                        <th>ID Card Number</th>
+                        <th>Vehicle Number</th>
+                        <th>Visit Date</th>
+                        <th>Status</th>
+                        <th>Show Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Visitor data will be populated here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <!-- Modal for visitor details and QR code -->
+    <div id="visitorModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span> <!-- Close button -->
+            <div id="qrcode-container">
+                <p>Please show this QR Code to the Guard House</p>
+                <div id="qrcode"></div> <!-- Container for QR code -->
+            </div>
+            <div id="visitorDetails"></div> <!-- Container for visitor details -->
+        </div>
+    </div>
+
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-database.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyDUrwSd3rJvJKe0gOG5E0U68ow-fPGOLPA",
+    authDomain: "loginhtml-b6a38.firebaseapp.com",
+    databaseURL: "https://loginhtml-b6a38-default-rtdb.firebaseio.com",
+    projectId: "loginhtml-b6a38",
+    storageBucket: "loginhtml-b6a38.appspot.com",
+    messagingSenderId: "888243437180",
+    appId: "1:888243437180:web:5faad9d368f11ee6b1d3f9",
+    measurementId: "G-VXJT8PMFPF"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadVisitors();
+
+    const applyFiltersBtn = document.getElementById('applyFilters');
+    applyFiltersBtn.addEventListener('click', function() {
+        loadVisitors();
+    });
+});
+
+function loadVisitors() {
+    const unitID = localStorage.getItem('unitID');
+    const visitorRef = ref(db, 'visitors');
+    const tableBody = document.querySelector('#visitorList tbody');
+    const filterDate = document.getElementById('filterDate').value;
+    const filterStatus = document.getElementById('filterStatus').value;
+
+    get(visitorRef).then((snapshot) => {
+        const visitors = snapshot.val();
+        tableBody.innerHTML = '';
+
+        for (const visitorID in visitors) {
+            const visitor = visitors[visitorID];
+            if (visitor.unitID === unitID) {
+                // Apply filters
+                const matchesDate = !filterDate || visitor.visitDate === filterDate;
+                const matchesStatus = filterStatus === 'all' || visitor.status === filterStatus;
+
+                if (matchesDate && matchesStatus) {
+                    const row = document.createElement('tr');
+                    let statusClass = '';
+                    
+                    // Determine the class based on status
+                    if (visitor.status === 'approved') {
+                        statusClass = 'status-approved';
+                    } else if (visitor.status === 'rejected') {
+                        statusClass = 'status-rejected';
+                    } else if (visitor.status === 'pending') {
+                        statusClass = 'status-pending';
+                    }
+
+                    row.className = statusClass;
+                    row.innerHTML = `
+                        <td>${visitorID}</td>
+                        <td>${visitor.fullName}</td>
+                        <td>${visitor.phoneNumber}</td>
+                        <td>${visitor.idCardNumber}</td>
+                        <td>${visitor.vehicleNumber || 'N/A'}</td>
+                        <td>${visitor.visitDate}</td>
+                        <td>${visitor.status}</td>
+                        <td><span class="details-btn" data-visitor-id="${visitorID}">Show Details</span></td>
+                    `;
+                    tableBody.appendChild(row);
+                }
+            }
+        }
+    }).catch((error) => {
+        console.error(error);
+    });
+}
+
+// Modal functionality for visitor details and QR code
+function showModal(visitorID, data) {
+    const modal = document.getElementById('visitorModal');
+    const visitorDetailsContainer = document.getElementById('visitorDetails');
+    const qrCodeUrl = `http://example.com/visitor/${visitorID}`;
+
+    visitorDetailsContainer.innerHTML = `
+        <p><strong>Visitor ID:</strong> ${visitorID}</p>
+        <p><strong>Full Name:</strong> ${data.fullName}</p>
+        <p><strong>Phone Number:</strong> ${data.phoneNumber}</p>
+        <p><strong>ID Card Number:</strong> ${data.idCardNumber}</p>
+        <p><strong>Vehicle Number:</strong> ${data.vehicleNumber || 'N/A'}</p>
+        <p><strong>Remarks:</strong> ${data.remarks || 'N/A'}</p>
+        <p><strong>Visit Date:</strong> ${data.visitDate}</p>
+        <p><strong>Unit ID:</strong> ${data.unitID}</p>
+        <p><strong>Overnight Parking:</strong> ${data.overnightParking ? 'Yes' : 'No'}</p>
+        <p><strong>Overnight Parking Days:</strong> ${data.overnightParkingDays ?? 0}</p>
+        <p><strong>Status:</strong> ${data.status}</p>
+        <p><strong>QR Code URL:</strong> ${qrCodeUrl}</p>
+    `;
+
+    $('#qrcode').qrcode({
+        text: qrCodeUrl,
+        width: 300,
+        height: 300
+    });
+
+    modal.style.display = 'block';
+
+    const closeBtn = modal.querySelector('.close');
+    closeBtn.onclick = function() {
+        modal.style.display = 'none';
+        // Open the link in the current window
+        window.location.href = 'listVisitors.html';
+    };
+
+    window.onclick = function(event) {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+            // Open the link in the current window
+            window.location.href = 'listVisitors.html';
+        }
+    };
+}
+
+// Event listener for "Show Details" button
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('details-btn')) {
+        const visitorID = e.target.getAttribute('data-visitor-id');
+        const visitorRef = ref(db, `visitors/${visitorID}`);
+
+        get(visitorRef).then((snapshot) => {
+            const data = snapshot.val();
+            showModal(visitorID, data);
+        }).catch((error) => {
+            console.error(error);
+        });
+    }
+});
+
+    </script>
+</body>
+</html>
