@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="../css/visitorManagement.css">
     <link rel="stylesheet" href="css/nav.css">
     <script type="module" src="../js/sideNav.js"></script>
+    <link rel="icon" type="image/x-icon" href="img/81074b1276848aeaac3f3ab33cf1e428.ico (1)/favicon.ico">
     <script type="module" src="js/script.js"></script>
     <title>Smart Resident Management System - Bulletin Details</title>
     <style>
@@ -74,6 +75,31 @@
             margin-top: 20px;
             font-style: italic;
             /* text-align: left; */
+        }
+        /* Print-specific styles */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .main-content, .main-content * {
+                visibility: visible;
+            }
+            .main-content {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                margin: 0;
+                padding: 0;
+                box-shadow: none;
+                overflow: visible;
+            }
+            .bulletin-details {
+                margin: 0;
+            }
+            .bulletin-actions {
+                display: none; /* Hide print button and return button */
+            }
         }
     </style>
 </head>
